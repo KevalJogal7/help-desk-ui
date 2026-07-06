@@ -1,7 +1,7 @@
 import { RouterProvider } from "react-router-dom"
 import { router } from "./routes/AppRoutes"
-import AxiosInterceptor from "./services/AxiosInterceptor"
 import Loader from "./components/Loader"
+import AxiosInterceptor from "./api/axiosInterceptor"
 
 function App() {
   return (

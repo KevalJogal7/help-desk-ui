@@ -26,6 +26,7 @@ import { useMsal } from '@azure/msal-react'
 import { loginRequest } from '../../config/msalConfig'
 import { ROUTES } from '../../routes/routeConstants'
 import type { SSOLoginRequest } from '../../models/auth'
+import { InteractionStatus } from '@azure/msal-browser'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -33,7 +34,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
   const navigate = useNavigate();
-  const { instance, accounts } = useMsal();
+  const { instance, accounts, inProgress } = useMsal();
 
   useEffect(() => {
     const loginWithBackend = async () => {
@@ -71,6 +72,14 @@ export default function Login() {
         console.error("Login Failed:", error);
       }
   }
+
+  const handleLoginWithSSO = () => {
+    if (inProgress !== InteractionStatus.None) {
+      return;
+    }
+
+    instance.loginRedirect(loginRequest);
+  };
 
   return (
     <Grid container sx={{ minHeight: '100svh' }}>
@@ -162,7 +171,6 @@ export default function Login() {
       >
         <Container maxWidth="xs">
 
-          {/* Header */}
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 4 }} gutterBottom>
             Sign in
           </Typography>
@@ -172,7 +180,7 @@ export default function Login() {
             startIcon={<Microsoft />}
             color="inherit"
             sx={{ textTransform: 'none', mb: 3 }}
-            onClick={() => instance.loginRedirect(loginRequest)}
+            onClick={handleLoginWithSSO}
           >
             Login with Microsoft
           </Button>
