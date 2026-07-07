@@ -1,9 +1,9 @@
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useLoading } from "../utils/LoadingContext";
+import { useAppSelector } from "../store/hooks";
 
 const Loader = () => {
-  const { loading } = useLoading();
+  const loading = useAppSelector((state) => state.loading.loading);
 
   return (
     <Backdrop

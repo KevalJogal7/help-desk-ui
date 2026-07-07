@@ -6,3 +6,20 @@ export interface BaseResponse<T> {
     statusCode: number;
     timestamp: string;
 }
+
+export interface LoadingState {
+    loading: boolean;
+}
+
+export type ToastSeverity = "success" | "error" | "warning" | "info";
+
+export interface ToastMessage {
+    id: string;
+    message: string;
+    severity: ToastSeverity;
+    duration?: number;
+}
+
+export interface ToastState {
+    toasts: ToastMessage[];
+}

@@ -4,11 +4,11 @@ const STORAGE_KEY = "auth";
 
 export const authStorage = {
     setAuth(data: LoginResponse): void {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     },
 
     getAuth(): LoginResponse | null {
-        const data = localStorage.getItem(STORAGE_KEY);
+        const data = sessionStorage.getItem(STORAGE_KEY);
 
         if (!data) {
             return null;
@@ -18,7 +18,7 @@ export const authStorage = {
     },
 
     clearAuth(): void {
-        localStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(STORAGE_KEY);
     },
 
     getAccessToken(): string | null {
@@ -38,7 +38,6 @@ export const authStorage = {
     },
 
     isAuthenticated(): boolean {
-        console.log("auth.....", this.getAccessToken())
         return !!this.getAccessToken();
     }
 };

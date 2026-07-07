@@ -4,14 +4,15 @@ import './index.css'
 import App from './App.tsx'
 import { MsalProvider } from '@azure/msal-react'
 import { msalInstance } from './config/msalConfig.ts'
-import { LoadingProvider } from './utils/LoadingContext.tsx'
+import { Provider } from 'react-redux'
+import { store } from './store/index.ts'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <LoadingProvider>
+    <Provider store={store}>
       <MsalProvider instance={msalInstance}>
         <App />
       </MsalProvider>
-    </LoadingProvider>
+    </Provider>
   </StrictMode>,
 )

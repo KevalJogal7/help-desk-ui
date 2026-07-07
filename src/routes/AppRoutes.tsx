@@ -4,7 +4,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import { Role } from "../models/auth";
 import { ROUTES } from "./routeConstants";
 
-const Login = lazy(() => import("../pages/Auth/Login"));
+const Login = lazy(() => import("../pages/Auth/Login/Login"));
+const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword/ForgotPassword"));
 const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard"));
 const Forbidden = lazy(() => import("../pages/Forbidden/Forbidden"));
 const Users = lazy(() => import("../pages/Users/Users"));
@@ -13,6 +14,7 @@ const Users = lazy(() => import("../pages/Users/Users"));
 
 export const router = createBrowserRouter([
     { path: ROUTES.LOGIN, element: <Login /> },
+    { path: ROUTES.FORGOT_PASSWORD, element: <ForgotPassword /> },
     { path: ROUTES.UNAUTHORIZED, element: <Forbidden /> },
     {
         element: <ProtectedRoute />,

@@ -1,15 +1,16 @@
 import { useEffect } from "react";
-import { useLoading } from "../utils/LoadingContext";
+import { useAppDispatch } from "../store/hooks";
+import { setLoading } from "../store/slices/loadingSlice";
 import { api } from "./axios";
 import { authStorage } from "../services/storage.service";
 
 const AxiosInterceptor = () => {
-  const { setLoading } = useLoading();
+  const dispatch = useAppDispatch();
   const token = authStorage.getAccessToken();
 
   useEffect(() => {
     const requestInterceptor = api.interceptors.request.use((config) => {
-      setLoading(true);
+      dispatch(setLoading(true));
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -18,11 +19,11 @@ const AxiosInterceptor = () => {
 
     const responseInterceptor = api.interceptors.response.use(
       (response) => {
-        setLoading(false);
+        dispatch(setLoading(false));
         return response;
       },
       (error) => {
-        setLoading(false);
+        dispatch(setLoading(false));
         return Promise.reject(error);
       }
     );
@@ -31,7 +32,7 @@ const AxiosInterceptor = () => {
       api.interceptors.request.eject(requestInterceptor);
       api.interceptors.response.eject(responseInterceptor);
     };
-  }, [setLoading]);
+  }, [dispatch]);
 
   return null;
 };

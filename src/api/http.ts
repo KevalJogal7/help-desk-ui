@@ -1,6 +1,7 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import { api } from "./axios";
 import type { BaseResponse } from "../models/common";
+import { toast } from "../utils/toastHelper";
 
 export const http = {
     async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
@@ -48,9 +49,12 @@ async function request<T>(apiCall: () => Promise<{ data: BaseResponse<T> }>): Pr
                 axiosError.message ??
                 "Something went wrong.";
 
+            toast.error(message);
             throw new Error(message);
         }
 
+        const message = error instanceof Error ? error.message : "Something went wrong.";
+        toast.error(message);
         throw error;
     }
 }
