@@ -14,6 +14,15 @@ export interface SSOLoginRequest {
     token: string;
 }
 
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ResetPasswordRequest {
+    token: string;
+    newPassword: string;
+}
+
 export const Role = {
     ADMIN: 1,
     SUPPORT_AGENT: 2,
