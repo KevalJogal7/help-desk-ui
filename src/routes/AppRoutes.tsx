@@ -10,8 +10,7 @@ const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword/ResetPasswo
 const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard"));
 const Forbidden = lazy(() => import("../pages/Forbidden/Forbidden"));
 const Users = lazy(() => import("../pages/Users/Users"));
-// const UserDetails = lazy(() => import("../pages/UserDetails/UserDetails"));
-// const NotFound = lazy(() => import("../pages/NotFound/NotFound"));
+const Tickets = lazy(() => import("../pages/Tickets/Tickets"));
 
 export const router = createBrowserRouter([
     { path: ROUTES.LOGIN, element: <Login /> },
@@ -24,6 +23,10 @@ export const router = createBrowserRouter([
             {
                 path: ROUTES.DASHBOARD,
                 element: <Dashboard />
+            },
+            {
+                path: ROUTES.TICKETS,
+                element: <Tickets />
             }
         ]
     },

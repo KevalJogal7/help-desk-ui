@@ -1,0 +1,30 @@
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.chip-sm {
+    padding: 2px 8px;
+    font-size: 0.7rem;
+}
+
+.chip-lg {
+    padding: 5px 14px;
+    font-size: 0.825rem;
+}
+
+.chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.8;
+    flex-shrink: 0;
+}

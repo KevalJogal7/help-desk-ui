@@ -6,6 +6,9 @@ import { MsalProvider } from '@azure/msal-react'
 import { msalInstance } from './config/msalConfig.ts'
 import { Provider } from 'react-redux'
 import { store } from './store/index.ts'
+import { setupInterceptors } from './api/axiosInterceptor.ts'
+
+setupInterceptors()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

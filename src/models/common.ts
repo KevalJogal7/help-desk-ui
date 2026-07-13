@@ -7,6 +7,12 @@ export interface BaseResponse<T> {
     timestamp: string;
 }
 
+export interface PagedResponse<T> {
+  items: T[];
+  totalCount: number;
+  totalPages: number;
+}
+
 export interface LoadingState {
     loading: boolean;
 }

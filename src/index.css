@@ -15,3 +15,41 @@ body {
   min-height: 100svh;
   width: 100%;
 }
+
+/* ── Global scrollbar styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c7d0;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8993a4;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c7d0 transparent;
+}
+
+/* ── Table cell utilities ── */
+.nowrap {
+  white-space: nowrap;
+}
+
+.truncate {
+  max-width: 0;
+  /* forces the td to respect width prop */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

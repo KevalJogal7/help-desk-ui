@@ -1,0 +1,50 @@
+.tickets-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.tickets-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.tickets-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #c1c7d0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+}
+
+.tickets-search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.875rem;
+    width: 100%;
+    color: inherit;
+}
+
+.tickets-search-icon {
+    flex-shrink: 0;
+    display: flex;
+}
+
+.tickets-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}

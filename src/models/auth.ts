@@ -7,7 +7,7 @@ export interface LoginResponse {
     accessToken: string;
     refreshToken: string;
     userName: string;
-    roleId: number;
+    role: string;
 }
 
 export interface SSOLoginRequest {
@@ -24,13 +24,11 @@ export interface ResetPasswordRequest {
 }
 
 export const Role = {
-    ADMIN: 1,
-    SUPPORT_AGENT: 2,
-    USER: 3,
-} as const;
-
-export type Role = typeof Role[keyof typeof Role];
+    ADMIN: "ADMIN",
+    SUPPORT_AGENT: "SUPPORT_AGENT",
+    USER: "USER",
+};
 
 export type Props = {
-    allowedRoles?: number[];
+    allowedRoles?: string[];
 };

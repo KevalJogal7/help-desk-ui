@@ -18,7 +18,7 @@ export const authStorage = {
     },
 
     clearAuth(): void {
-        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.clear();
     },
 
     getAccessToken(): string | null {
@@ -30,11 +30,12 @@ export const authStorage = {
     },
 
     getUserName(): string | null {
-        return this.getAuth()?.userName ?? null;
+        const name = this.getAuth()?.userName ?? null;
+        return name;
     },
 
-    getRoleId(): number | null {
-        return this.getAuth()?.roleId ?? null;
+    getRole(): string | null {
+        return this.getAuth()?.role ?? null;
     },
 
     isAuthenticated(): boolean {

@@ -1,9 +1,10 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { authStorage } from "../services/storage.service";
 import type { Props } from "../models/auth";
+import Layout from "../components/Layout/Layout";
 
 const ProtectedRoute = ({ allowedRoles }: Props) => {
-    const role = authStorage.getRoleId();
+    const role = authStorage.getRole();
 
     if (!authStorage.isAuthenticated() || !role) {
         return <Navigate to="/" replace />;
@@ -13,7 +14,7 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
         return <Navigate to="/unauthorized" replace />;
     }
 
-    return <Outlet />;
+    return <Layout />;
 };
 
 export default ProtectedRoute;
