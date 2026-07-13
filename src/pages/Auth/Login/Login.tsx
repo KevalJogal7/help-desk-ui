@@ -22,7 +22,7 @@ import type { SSOLoginRequest } from '../../../models/auth'
 import { login, ssoLogin } from '../../../services/auth.service'
 import { ROUTES } from '../../../routes/routeConstants'
 import AuthLayout from '../AuthLayout/AuthLayout'
-import '../AuthLayout/AuthLayout.css'
+import { GradientButton } from '../AuthLayout/AuthLayout.styles'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
@@ -156,15 +156,14 @@ export default function Login() {
               </Link>
             </Stack>
 
-            <Button
+            <GradientButton
               type="submit"
               fullWidth
               variant="contained"
               size="large"
-              className="auth-submit-btn"
             >
               Sign in
-            </Button>
+            </GradientButton>
 
           </Stack>
         </Box>

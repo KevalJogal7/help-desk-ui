@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
   Box,
-  Button,
   Container,
   IconButton,
   InputAdornment,
@@ -13,7 +12,7 @@ import {
 import { ArrowBack, CheckCircle, Visibility, VisibilityOff } from '@mui/icons-material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AuthLayout from '../AuthLayout/AuthLayout'
-import '../AuthLayout/AuthLayout.css'
+import { GradientButton } from '../AuthLayout/AuthLayout.styles'
 import { ROUTES } from '../../../routes/routeConstants'
 import { resetPassword } from '../../../services/auth.service'
 
@@ -77,15 +76,14 @@ const ResetPassword = () => {
                 <Typography variant="body1" sx={{ mb: 3, opacity: 0.7 }}>
                 Your password has been updated. You can now sign in with your new password.
                 </Typography>
-                <Button
+                <GradientButton
                 fullWidth
                 variant="contained"
                 size="large"
-                className="auth-submit-btn"
                 onClick={() => navigate(ROUTES.LOGIN)}
                 >
                 Back to sign in
-                </Button>
+                </GradientButton>
             </>
             ) : (
             <>
@@ -150,16 +148,15 @@ const ResetPassword = () => {
                     }}
                     />
 
-                    <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    size="large"
-                    className="auth-submit-btn"
-                    disabled={mismatch}
-                    >
-                    Set new password
-                    </Button>
+                <GradientButton
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={mismatch}
+                >
+                  Set new password
+                </GradientButton>
 
                 </Stack>
                 </Box>

@@ -3,15 +3,14 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
   Tooltip,
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import './DataTable.css'
 import type { ColumnDef, DataTableProps } from '../../models/dataTable'
+import { PaginationBar, ScrollableTableContainer, StickyCell } from './DataTable.styles'
 
 function DataTable<T>({
   columns,
@@ -28,105 +27,96 @@ function DataTable<T>({
 }: DataTableProps<T>) {
   const visibleColumns = columns.filter((col) => !col.hide)
 
-  const handlePageChange = (_: unknown, newPage: number) => {
-    onPageChange(newPage)
-  }
-
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onPageSizeChange(parseInt(e.target.value, 10))
-  }
-
   const getCellContent = (col: ColumnDef<T>, row: T) => {
-    if (col.render) {
-      return col.render(row)
-    }
-
+    if (col.render) return col.render(row)
     const value = (row as any)[col.key]
     return value ?? ''
   }
 
   const renderCell = (col: ColumnDef<T>, row: T) => {
     const content = getCellContent(col, row)
-
-    if (!col.tooltip) {
-      return content
-    }
-
+    if (!col.tooltip) return content
     const tooltipTitle = typeof col.tooltip === 'function' ? col.tooltip(row) : String(content)
-
-    return (
-      <Tooltip title={tooltipTitle}>
-        <span>{content}</span>
-      </Tooltip>
-    )
+    return <Tooltip title={tooltipTitle}><span>{content}</span></Tooltip>
   }
 
   return (
     <>
-      <TableContainer className="datatable-scroll">
+      <ScrollableTableContainer>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              {visibleColumns.map((col) => (
-                <TableCell
-                  key={col.key}
-                  align={col.align}
-                  className={`${col.sticky ? 'col-sticky' : ''} ${col.headerClassName ?? ''}`}
-                  sx={{
-                    fontWeight: 700,
-                    width: col.width,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {col.label}
-                </TableCell>
-              ))}
-              {showAction && <TableCell className='col-sticky'></TableCell>}
+              {visibleColumns.map((col) =>
+                col.sticky ? (
+                  <StickyCell
+                    key={col.key}
+                    align={col.align}
+                    className={col.headerClassName}
+                    sx={{ fontWeight: 700, width: col.width, whiteSpace: 'nowrap' }}
+                  >
+                    {col.label}
+                  </StickyCell>
+                ) : (
+                  <TableCell
+                    key={col.key}
+                    align={col.align}
+                    className={col.headerClassName}
+                    sx={{ fontWeight: 700, width: col.width, whiteSpace: 'nowrap' }}
+                  >
+                    {col.label}
+                  </TableCell>
+                )
+              )}
+              {showAction && <StickyCell sx={{ padding: 0 }} />}
             </TableRow>
           </TableHead>
 
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={visibleColumns.length} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                <TableCell colSpan={visibleColumns.length + (showAction ? 1 : 0)} align="center" sx={{ py: 6, color: 'text.secondary' }}>
                   {emptyMessage}
                 </TableCell>
               </TableRow>
             ) : (
               data.map((row) => (
                 <TableRow key={rowKey(row)} hover>
-                  {visibleColumns.map((col) => (
-                    <TableCell
-                      key={col.key}
-                      align={col.align}
-                      className={`${col.sticky ? 'col-sticky' : ''} ${col.cellClassName ?? ''}`}
-                    >
-                      {renderCell(col, row)}
-                    </TableCell>
-                  ))}
-                  {showAction && <TableCell className='col-sticky'>
+                  {visibleColumns.map((col) =>
+                    col.sticky ? (
+                      <StickyCell key={col.key} align={col.align} className={col.cellClassName}>
+                        {renderCell(col, row)}
+                      </StickyCell>
+                    ) : (
+                      <TableCell key={col.key} align={col.align} className={col.cellClassName}>
+                        {renderCell(col, row)}
+                      </TableCell>
+                    )
+                  )}
+                  {showAction && (
+                    <StickyCell sx={{ padding: 0 }}>
                       <IconButton size="small">
                         <MoreVertIcon fontSize="small" />
                       </IconButton>
-                    </TableCell>}
+                    </StickyCell>
+                  )}
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
-      </TableContainer>
+      </ScrollableTableContainer>
 
-      <div className="datatable-pagination">
+      <PaginationBar>
         <TablePagination
           component="div"
           count={totalCount}
           page={page}
           rowsPerPage={pageSize}
           rowsPerPageOptions={pageSizeOptions}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handlePageSizeChange}
+          onPageChange={(_, p) => onPageChange(p)}
+          onRowsPerPageChange={(e) => onPageSizeChange(parseInt(e.target.value, 10))}
         />
-      </div>
+      </PaginationBar>
     </>
   )
 }

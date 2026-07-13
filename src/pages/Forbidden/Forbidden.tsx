@@ -1,27 +1,23 @@
 import { Button, Typography } from '@mui/material'
-import { LockPerson, ArrowBack } from '@mui/icons-material'
+import { LockPerson, ArrowBack, Home } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../routes/routeConstants'
-import './Forbidden.css'
+import { ActionsRow, ForbiddenCard, ForbiddenRoot, IconWrapper } from './Forbidden.styles'
 
 const Forbidden = () => {
   const navigate = useNavigate()
 
   const handleGoBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1)
-    } else {
-      navigate(ROUTES.DASHBOARD)
-    }
+    if (window.history.length > 1) navigate(-1)
+    else navigate(ROUTES.DASHBOARD)
   }
 
   return (
-    <div className="forbidden-root">
-      <div className="forbidden-card">
-
-        <div className="forbidden-icon-wrapper">
+    <ForbiddenRoot>
+      <ForbiddenCard>
+        <IconWrapper>
           <LockPerson sx={{ fontSize: 48, color: 'error.main' }} />
-        </div>
+        </IconWrapper>
 
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           Access Denied
@@ -32,7 +28,7 @@ const Forbidden = () => {
           Contact your administrator if you think this is a mistake.
         </Typography>
 
-        <div className="forbidden-actions">
+        <ActionsRow>
           <Button
             variant="outlined"
             startIcon={<ArrowBack />}
@@ -41,10 +37,17 @@ const Forbidden = () => {
           >
             Go back
           </Button>
-        </div>
-
-      </div>
-    </div>
+          <Button
+            variant="contained"
+            startIcon={<Home />}
+            onClick={() => navigate(ROUTES.DASHBOARD)}
+            sx={{ textTransform: 'none', fontWeight: 600, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
+          >
+            Go to Dashboard
+          </Button>
+        </ActionsRow>
+      </ForbiddenCard>
+    </ForbiddenRoot>
   )
 }
 

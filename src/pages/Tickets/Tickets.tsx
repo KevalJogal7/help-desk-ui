@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react'
-import { Button, MenuItem, Select, Typography, type SelectChangeEvent } from '@mui/material'
+import { MenuItem, Select, Typography, type SelectChangeEvent } from '@mui/material'
 import { AddOutlined, SearchOutlined } from '@mui/icons-material'
 import type { Category, SubCategory, Ticket, TicketPageRequest } from '../../models/ticket'
 import { getCategories, getSubCategories, getTickets } from '../../services/ticket.service'
-import './Tickets.css'
-import '../Auth/AuthLayout/AuthLayout.css'
 import type { ColumnDef } from '../../models/dataTable'
 import DataTable from '../../components/DataTable/DataTable'
 import StatusChip from '../../components/StatusChip/StatusChip'
 import { TICKET_PRIORITY_COLORS, TICKET_STATUS_COLORS } from '../../components/StatusChip/chipColors'
 import { useDebounce } from '../../utils/useDebounce'
 import { useUpdateEffect } from '../../utils/useUpdateEffect'
+import { GradientButton } from '../Auth/AuthLayout/AuthLayout.styles'
+import {
+  SearchBox,
+  SearchIconWrap,
+  TableWrapper,
+  TicketsHeader,
+  TicketsPage,
+  TicketsToolbar,
+  ToolbarRight,
+} from './Tickets.styles'
 
 const Tickets = () => {
   const [tickets, setTickets] = useState<Ticket[]>([])
@@ -78,14 +86,14 @@ const Tickets = () => {
     {
       key: 'title',
       label: 'Title',
-      width: 200,
+      width: 300,
       tooltip: true,
       cellClassName: 'truncate',
     },
     {
       key: 'description',
       label: 'Description',
-      width: 260,
+      width: 400,
       tooltip: true,
       cellClassName: 'truncate',
     },
@@ -124,27 +132,25 @@ const Tickets = () => {
 
   return (
     <div className="fill-height">
-      <div className="tickets-page">
-
-        <div className="tickets-header">
+      <TicketsPage>
+        <TicketsHeader>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             Tickets
           </Typography>
-        </div>
+        </TicketsHeader>
 
-        <div className="tickets-toolbar">
-
-          <div className="tickets-search">
-            <span className="tickets-search-icon">
+        <TicketsToolbar>
+          <SearchBox>
+            <SearchIconWrap>
               <SearchOutlined fontSize="small" />
-            </span>
+            </SearchIconWrap>
             <input
               type="text"
               placeholder="Search tickets..."
               value={search}
               onChange={(e: any) => setSearch(e.target.value)}
             />
-          </div>
+          </SearchBox>
 
           <Select
             value={ticketRequest.category}
@@ -159,28 +165,27 @@ const Tickets = () => {
             ))}
           </Select>
 
-            <Select
-              value={ticketRequest.subCategory}
-              onChange={handleSubCategoryChange}
-              displayEmpty
-              size="small"
-              sx={{ minWidth: 180, fontSize: '0.875rem', backgroundColor: 'white' }}
-            >
-              <MenuItem value={0}><em>All Sub-Categories</em></MenuItem>
-              {subCategories.map((s) => (
-                <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
-              ))}
-            </Select>
+          <Select
+            value={ticketRequest.subCategory}
+            onChange={handleSubCategoryChange}
+            displayEmpty
+            size="small"
+            sx={{ minWidth: 180, fontSize: '0.875rem', backgroundColor: 'white' }}
+          >
+            <MenuItem value={0}><em>All Sub-Categories</em></MenuItem>
+            {subCategories.map((s) => (
+              <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
+            ))}
+          </Select>
 
-          <div className="tickets-toolbar-right">
-            <Button variant="contained" startIcon={<AddOutlined />} className="auth-submit-btn">
+          <ToolbarRight>
+            <GradientButton variant="contained" startIcon={<AddOutlined />}>
               New Ticket
-            </Button>
-          </div>
+            </GradientButton>
+          </ToolbarRight>
+        </TicketsToolbar>
 
-        </div>
-
-        <div className="tickets-table-wrapper">
+        <TableWrapper>
           <DataTable
             columns={columns}
             data={tickets}
@@ -193,9 +198,8 @@ const Tickets = () => {
             onPageSizeChange={(ps) => setTicketRequest({ ...ticketRequest, pageSize: ps, page: 0 })}
             emptyMessage="No tickets found"
           />
-        </div>
-
-      </div>
+        </TableWrapper>
+      </TicketsPage>
     </div>
   )
 }

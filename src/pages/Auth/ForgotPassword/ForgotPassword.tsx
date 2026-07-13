@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
   Box,
-  Button,
   Container,
   Stack,
   TextField,
@@ -10,7 +9,7 @@ import {
 } from '@mui/material'
 import { ArrowBack, MarkEmailRead } from '@mui/icons-material'
 import AuthLayout from '../AuthLayout/AuthLayout'
-import '../AuthLayout/AuthLayout.css'
+import { GradientButton } from '../AuthLayout/AuthLayout.styles'
 import { ROUTES } from '../../../routes/routeConstants'
 import { forgotPassword } from '../../../services/auth.service'
 
@@ -59,15 +58,14 @@ export default function ForgotPassword() {
                   slotProps={{ inputLabel: { shrink: true } }}
                 />
 
-                <Button
+                <GradientButton
                   type="submit"
                   fullWidth
                   variant="contained"
                   size="large"
-                  className="auth-submit-btn"
                 >
                   Send reset link
-                </Button>
+                </GradientButton>
               </Stack>
             </Box>
           </>

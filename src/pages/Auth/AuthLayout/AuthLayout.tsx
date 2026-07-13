@@ -1,7 +1,7 @@
-import { Box, Grid, Stack, Typography } from '@mui/material'
+import { Grid, Stack, Typography } from '@mui/material'
 import { LockOutlined } from '@mui/icons-material'
 import type { ReactNode } from 'react'
-import './AuthLayout.css'
+import { FeaturesDot, LeftPanel, LogoBox, RightPanel } from './AuthLayout.styles'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -17,12 +17,11 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
     <Grid container sx={{ minHeight: '100svh' }}>
 
-      <Grid size={{ xs: 0, md: 6 }} className="auth-panel-left">
-        <Box sx={{ position: 'relative', textAlign: 'center', color: '#fff' }}>
-
-          <Box className="auth-logo-box">
+      <LeftPanel size={{ xs: 0, md: 6 }}>
+        <Typography variant="h3" component="div" sx={{ position: 'relative', textAlign: 'center', color: '#fff' }}>
+          <LogoBox>
             <LockOutlined sx={{ fontSize: 36 }} />
-          </Box>
+          </LogoBox>
 
           <Typography variant="h3" sx={{ fontWeight: 700 }} gutterBottom>
             Welcome back
@@ -36,23 +35,25 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             Everything you need, all in one place.
           </Typography>
 
-          <Stack spacing={2} className="auth-features-stack">
+          <Stack
+            spacing={2}
+            sx={{ mt: 5, alignItems: 'flex-start', mx: 'auto', maxWidth: 300 }}
+          >
             {features.map((item) => (
               <Stack key={item} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                <Box className="auth-feature-dot" />
+                <FeaturesDot />
                 <Typography variant="body2" sx={{ opacity: 0.85 }}>
                   {item}
                 </Typography>
               </Stack>
             ))}
           </Stack>
+        </Typography>
+      </LeftPanel>
 
-        </Box>
-      </Grid>
-
-      <Grid size={{ xs: 12, md: 6 }} className="auth-panel-right">
+      <RightPanel size={{ xs: 12, md: 6 }}>
         {children}
-      </Grid>
+      </RightPanel>
 
     </Grid>
   )
