@@ -11,6 +11,8 @@ const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard"));
 const Forbidden = lazy(() => import("../pages/Forbidden/Forbidden"));
 const Users = lazy(() => import("../pages/Users/Users"));
 const Tickets = lazy(() => import("../pages/Tickets/Tickets"));
+const TicketForm = lazy(() => import("../pages/Tickets/TicketForm/TicketForm"));
+const TicketView = lazy(() => import("../pages/Tickets/TicketView/TicketView"));
 
 export const router = createBrowserRouter([
     { path: ROUTES.LOGIN, element: <Login /> },
@@ -20,14 +22,11 @@ export const router = createBrowserRouter([
     {
         element: <ProtectedRoute />,
         children: [
-            {
-                path: ROUTES.DASHBOARD,
-                element: <Dashboard />
-            },
-            {
-                path: ROUTES.TICKETS,
-                element: <Tickets />
-            }
+            { path: ROUTES.DASHBOARD, element: <Dashboard /> },
+            { path: ROUTES.TICKETS, element: <Tickets /> },
+            { path: ROUTES.TICKET_NEW, element: <TicketForm /> },
+            { path: ROUTES.TICKET_VIEW, element: <TicketView /> },
+            { path: ROUTES.TICKET_EDIT, element: <TicketForm /> },
         ]
     },
     {

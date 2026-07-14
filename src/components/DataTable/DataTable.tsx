@@ -1,16 +1,22 @@
 import {
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   Tooltip,
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import type { ColumnDef, DataTableProps } from '../../models/dataTable'
 import { PaginationBar, ScrollableTableContainer, StickyCell } from './DataTable.styles'
+import { useState } from 'react'
 
 function DataTable<T>({
   columns,
@@ -24,6 +30,10 @@ function DataTable<T>({
   onPageChange,
   onPageSizeChange,
   emptyMessage = 'No data found',
+  actions,
+  sortBy,
+  sortDescending,
+  onSort,
 }: DataTableProps<T>) {
   const visibleColumns = columns.filter((col) => !col.hide)
 
@@ -40,6 +50,24 @@ function DataTable<T>({
     return <Tooltip title={tooltipTitle}><span>{content}</span></Tooltip>
   }
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRow, setSelectedRow] = useState<T | null>(null);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    row: T
+  ) => {
+    if (actions && actions?.length > 0) {
+      setAnchorEl(event.currentTarget);
+      setSelectedRow(row);
+    }
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRow(null);
+  };
+
   return (
     <>
       <ScrollableTableContainer>
@@ -54,7 +82,17 @@ function DataTable<T>({
                     className={col.headerClassName}
                     sx={{ fontWeight: 700, width: col.width, whiteSpace: 'nowrap' }}
                   >
-                    {col.label}
+                    {col.sortable ? (
+                    <TableSortLabel
+                        active={sortBy === col.key}
+                        direction={sortDescending ? "desc" : "asc"}
+                        onClick={() =>onSort?.(col.key)}
+                    >
+                        {col.label + (sortDescending ? "desc" : "asc")}
+                    </TableSortLabel>
+                  ) : (
+                      col.label
+                  )}
                   </StickyCell>
                 ) : (
                   <TableCell
@@ -63,7 +101,17 @@ function DataTable<T>({
                     className={col.headerClassName}
                     sx={{ fontWeight: 700, width: col.width, whiteSpace: 'nowrap' }}
                   >
-                    {col.label}
+                    {col.sortable ? (
+                      <TableSortLabel
+                          active={sortBy === col.key}
+                          direction={sortDescending ? "desc" : "asc"}
+                          onClick={() =>onSort?.(col.key)}
+                      >
+                          {col.label}
+                      </TableSortLabel>
+                    ) : (
+                        col.label
+                    )}
                   </TableCell>
                 )
               )}
@@ -94,11 +142,62 @@ function DataTable<T>({
                   )}
                   {showAction && (
                     <StickyCell sx={{ padding: 0 }}>
-                      <IconButton size="small">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleMenuOpen(e, row)}
+                      >
                         <MoreVertIcon fontSize="small" />
                       </IconButton>
                     </StickyCell>
                   )}
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    {selectedRow &&
+                      actions
+                        ?.filter(action => !action.hidden?.(selectedRow))
+                        .map(action => (
+                          <MenuItem
+                            key={action.label}
+                            disabled={action.disabled?.(selectedRow)}
+                            onClick={() => {
+                              action.onClick(selectedRow);
+                              handleMenuClose();
+                            }}
+                            sx={{
+                              minWidth: 180,
+                              py: 1,
+                              px: 1.5,
+                              gap: 1,
+                            }}
+                          >
+                            {action.icon && (
+                              <ListItemIcon
+                                sx={{
+                                  minWidth: 32,
+                                  color: "text.secondary",
+                                }}
+                              >
+                                {action.icon}
+                              </ListItemIcon>
+                            )}
+
+                            <ListItemText
+                              primary={action.label}
+                            />
+                          </MenuItem>
+                        ))}
+                  </Menu>
                 </TableRow>
               ))
             )}

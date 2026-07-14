@@ -1,21 +1,15 @@
 export const ROUTES = {
     LOGIN: "/",
-
     FORGOT_PASSWORD: "/forgot-password",
-
     RESET_PASSWORD: "/reset-password",
-
     DASHBOARD: "/dashboard",
-
     TICKETS: "/tickets",
-
+    TICKET_NEW: "/tickets/new",
+    TICKET_VIEW: "/tickets/:id/view",
+    TICKET_EDIT: "/tickets/:id/edit",
     USERS: "/users",
-
     USER_DETAILS: "/users/:id",
-
     PROFILE: "/profile",
-
     NOT_FOUND: "*",
-
-    UNAUTHORIZED: "/unauthorized"
+    UNAUTHORIZED: "/unauthorized",
 };

@@ -4,13 +4,6 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 #root {
   min-height: 100svh;
   width: 100%;
@@ -35,6 +28,16 @@ body {
   background: #8993a4;
 }
 
+[data-mui-color-scheme='dark'] ::-webkit-scrollbar-thumb,
+.dark ::-webkit-scrollbar-thumb {
+  background: #3a3f52;
+}
+
+[data-mui-color-scheme='dark'] ::-webkit-scrollbar-thumb:hover,
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #555b72;
+}
+
 /* Firefox */
 * {
   scrollbar-width: thin;
@@ -48,7 +51,6 @@ body {
 
 .truncate {
   max-width: 180px;
-  /* forces the td to respect width prop */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

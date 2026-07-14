@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { MenuItem, Select, Typography, type SelectChangeEvent } from '@mui/material'
 import { AddOutlined, SearchOutlined } from '@mui/icons-material'
-import type { Category, SubCategory, Ticket, TicketPageRequest } from '../../models/ticket'
-import { getCategories, getSubCategories, getTickets } from '../../services/ticket.service'
-import type { ColumnDef } from '../../models/dataTable'
+import EditIcon from '@mui/icons-material/Edit'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import DeleteIcon from '@mui/icons-material/Delete'
+import type { Ticket, TicketPageRequest } from '../../models/ticket'
+import { getTickets } from '../../services/ticket.service'
+import type { ColumnDef, TableAction } from '../../models/dataTable'
 import DataTable from '../../components/DataTable/DataTable'
 import StatusChip from '../../components/StatusChip/StatusChip'
 import { TICKET_PRIORITY_COLORS, TICKET_STATUS_COLORS } from '../../components/StatusChip/chipColors'
@@ -17,39 +21,33 @@ import {
   TicketsHeader,
   TicketsPage,
   TicketsToolbar,
-  ToolbarRight,
 } from './Tickets.styles'
+import { ROUTES } from '../../routes/routeConstants'
+import { useDropdowns } from '../../hooks/useDropdowns'
 
 const Tickets = () => {
+  const navigate = useNavigate()
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [totalCount, setTotalCount] = useState(0)
+
+  // Dropdowns from Redux (fetched once, cached globally)
+  const { categories, subCategories, priorities, statusList } = useDropdowns()
 
   // Filters
   const [search, setSearch] = useState('')
   const debounceSearch = useDebounce(search);
-  const [categories, setCategories] = useState<Category[]>([])
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([])
   const defaultValues: TicketPageRequest = {
     page: 0,
     pageSize: 10,
     search: "",
     category: 0,
     subCategory: 0,
-    sortBy: "",
-    sortDirection: "",
+    status: 0,
+    priority: 0,
+    sortBy: "createdOn",
+    sortDirection: "desc",
 }
   const [ticketRequest, setTicketRequest] = useState<TicketPageRequest>(defaultValues)
-
-
-  useEffect(() => {
-    const loadData = async () => {
-      const categoryRecords = await getCategories();
-      setCategories(categoryRecords);
-      const subCategories = await getSubCategories();
-      setSubCategories(subCategories);
-    }
-    loadData();
-  }, [])
 
   const loadTickets = async (page: number) => {
     const result = await getTickets({ ...ticketRequest, search: debounceSearch, page })
@@ -67,21 +65,39 @@ const Tickets = () => {
     } else {
       loadTickets(0);
     }
-  }, [debounceSearch, ticketRequest.category, ticketRequest.pageSize, ticketRequest.subCategory])
+  }, [debounceSearch,
+      ticketRequest.category,
+      ticketRequest.pageSize, 
+      ticketRequest.subCategory,
+      ticketRequest.status,
+      ticketRequest.priority,
+      ticketRequest.sortBy,
+      ticketRequest.sortDirection])
 
-  const handleCategoryChange = (e: SelectChangeEvent<number>) => {
-    setTicketRequest({...ticketRequest, category: e.target.value})
-  }
+  const handleSelectChange =
+    (field: keyof TicketPageRequest) =>
+    (e: SelectChangeEvent<number>) => {
+      setTicketRequest((prev) => ({
+        ...prev,
+        [field]: Number(e.target.value),
+      }));
+  };
 
-  const handleSubCategoryChange = (e: SelectChangeEvent<number>) => {
-    setTicketRequest({...ticketRequest, subCategory: e.target.value})
-  }
+  const handleSort = (field: string) => {
+    const { sortBy, sortDirection } = ticketRequest;
+    setTicketRequest({
+      ...ticketRequest,
+      sortDirection: sortBy === field ? sortDirection === "asc" ? "desc" : "asc" : "asc",
+      sortBy: field 
+    })
+  };
 
   const columns: ColumnDef<Ticket>[] = [
     {
       key: 'ticketNumber',
       label: 'Ticket No.',
       cellClassName: 'nowrap',
+      sortable: true
     },
     {
       key: 'title',
@@ -89,6 +105,7 @@ const Tickets = () => {
       width: 300,
       tooltip: true,
       cellClassName: 'truncate',
+      sortable: true
     },
     {
       key: 'description',
@@ -96,21 +113,25 @@ const Tickets = () => {
       width: 400,
       tooltip: true,
       cellClassName: 'truncate',
+      sortable: true
     },
     {
       key: 'category',
       label: 'Category',
       cellClassName: 'nowrap',
+      sortable: true
     },
     {
       key: 'subCategory',
       label: 'Sub-Category',
       cellClassName: 'nowrap',
+      sortable: true
     },
     {
       key: 'createdBy',
       label: 'Created By',
       cellClassName: 'nowrap',
+      sortable: true
     },
     {
       key: 'priority',
@@ -130,6 +151,24 @@ const Tickets = () => {
     },
   ]
 
+  const actions: TableAction<Ticket>[] = [
+    {
+      label: 'View',
+      icon: <VisibilityIcon fontSize="small" />,
+      onClick: (row) => navigate(ROUTES.TICKET_VIEW.replace(':id', row.ticketId)),
+    },
+    {
+      label: 'Edit',
+      icon: <EditIcon fontSize="small" />,
+      onClick: (row) => navigate(ROUTES.TICKET_EDIT.replace(':id', row.ticketId)),
+    },
+    {
+      label: 'Delete',
+      icon: <DeleteIcon fontSize="small" />,
+      onClick: (row) => console.log('delete', row.ticketId),
+    },
+  ]
+
   return (
     <div className="fill-height">
       <TicketsPage>
@@ -137,6 +176,13 @@ const Tickets = () => {
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             Tickets
           </Typography>
+          <GradientButton
+            variant="contained"
+            startIcon={<AddOutlined />}
+            onClick={() => navigate(ROUTES.TICKET_NEW)}
+          >
+            New Ticket
+          </GradientButton>
         </TicketsHeader>
 
         <TicketsToolbar>
@@ -154,10 +200,10 @@ const Tickets = () => {
 
           <Select
             value={ticketRequest.category}
-            onChange={handleCategoryChange}
+            onChange={handleSelectChange("category")}
             displayEmpty
             size="small"
-            sx={{ minWidth: 160, fontSize: '0.875rem', backgroundColor: 'white' }}
+            sx={{ minWidth: 160 }}
           >
             <MenuItem value={0}><em>All Categories</em></MenuItem>
             {categories.map((c) => (
@@ -167,10 +213,10 @@ const Tickets = () => {
 
           <Select
             value={ticketRequest.subCategory}
-            onChange={handleSubCategoryChange}
+            onChange={handleSelectChange("subCategory")}
             displayEmpty
             size="small"
-            sx={{ minWidth: 180, fontSize: '0.875rem', backgroundColor: 'white' }}
+            sx={{ minWidth: 180 }}
           >
             <MenuItem value={0}><em>All Sub-Categories</em></MenuItem>
             {subCategories.map((s) => (
@@ -178,11 +224,32 @@ const Tickets = () => {
             ))}
           </Select>
 
-          <ToolbarRight>
-            <GradientButton variant="contained" startIcon={<AddOutlined />}>
-              New Ticket
-            </GradientButton>
-          </ToolbarRight>
+          <Select
+            value={ticketRequest.priority}
+            onChange={handleSelectChange("priority")}
+            displayEmpty
+            size="small"
+            sx={{ minWidth: 180 }}
+          >
+            <MenuItem value={0}><em>All Priorities</em></MenuItem>
+            {priorities.map((s) => (
+              <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
+            ))}
+          </Select>
+
+          <Select
+            value={ticketRequest.status}
+            onChange={handleSelectChange("status")}
+            displayEmpty
+            size="small"
+            sx={{ minWidth: 160 }}
+          >
+            <MenuItem value={0}><em>All Status</em></MenuItem>
+            {statusList.map((c) => (
+              <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+            ))}
+          </Select>
+
         </TicketsToolbar>
 
         <TableWrapper>
@@ -197,6 +264,10 @@ const Tickets = () => {
             onPageChange={(p) => setTicketRequest({ ...ticketRequest, page: p })}
             onPageSizeChange={(ps) => setTicketRequest({ ...ticketRequest, pageSize: ps, page: 0 })}
             emptyMessage="No tickets found"
+            actions={actions}
+            sortBy={ticketRequest.sortBy}
+            sortDescending={ticketRequest.sortDirection === "desc"}
+            onSort={handleSort}
           />
         </TableWrapper>
       </TicketsPage>
