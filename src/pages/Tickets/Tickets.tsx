@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MenuItem, Select, Typography, type SelectChangeEvent } from '@mui/material'
+import { Link, MenuItem, Select, Typography, type SelectChangeEvent } from '@mui/material'
 import { AddOutlined, SearchOutlined } from '@mui/icons-material'
 import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import type { Ticket, TicketPageRequest } from '../../models/ticket'
-import { getTickets } from '../../services/ticket.service'
+import { deleteTicket, getTickets } from '../../services/ticket.service'
 import type { ColumnDef, TableAction } from '../../models/dataTable'
 import DataTable from '../../components/DataTable/DataTable'
 import StatusChip from '../../components/StatusChip/StatusChip'
@@ -24,11 +24,18 @@ import {
 } from './Tickets.styles'
 import { ROUTES } from '../../routes/routeConstants'
 import { useDropdowns } from '../../hooks/useDropdowns'
+import { getUsers } from '../../services/user.service'
+import type { UserListRequest, UserResponse } from '../../models/user'
+import AssignedToCell from '../../components/AssignedToCell/AssignedToCell'
+import { assignTicket } from '../../services/ticket.service'
+import ConfirmationDialog from '../../components/ConfirmationDialog'
 
 const Tickets = () => {
   const navigate = useNavigate()
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [totalCount, setTotalCount] = useState(0)
+  const [users, setUsers] = useState<UserResponse[]>([])
+  const [deleteId, setDeleteId] = useState<string | null>(null)
 
   // Dropdowns from Redux (fetched once, cached globally)
   const { categories, subCategories, priorities, statusList } = useDropdowns()
@@ -53,6 +60,27 @@ const Tickets = () => {
     const result = await getTickets({ ...ticketRequest, search: debounceSearch, page })
     setTickets(result.items)
     setTotalCount(result.totalCount)
+  }
+
+  const loadUsers = async () => {
+    const request: UserListRequest = {
+      page: 0,
+      pageSize: 0,
+      role: 2
+    } 
+    const result = await getUsers(request);
+    setUsers(result.items)
+  }
+
+  useEffect(() => {
+    loadUsers();
+  },[]);
+
+  const handleDelete = async () => {
+    if (!deleteId) return
+    await deleteTicket(deleteId)
+    setDeleteId(null)
+    await loadTickets(ticketRequest.page)
   }
 
   useEffect(() => {
@@ -92,12 +120,19 @@ const Tickets = () => {
     })
   };
 
+  const handleAssign = async (ticketId: string, userId: string | null) => {
+    await assignTicket({ ticketId, assignedTo: userId ?? '' })
+  }
+
   const columns: ColumnDef<Ticket>[] = [
     {
       key: 'ticketNumber',
       label: 'Ticket No.',
       cellClassName: 'nowrap',
-      sortable: true
+      sortable: true,
+      render: (ticket) => (
+        <Link href={ROUTES.TICKET_VIEW.replace(':id', ticket.ticketId)}>{ticket.ticketNumber}</Link>
+      ),
     },
     {
       key: 'title',
@@ -134,6 +169,18 @@ const Tickets = () => {
       sortable: true
     },
     {
+      key: 'assignedTo',
+      label: 'Assigned To',
+      cellClassName: 'nowrap',
+      render: (ticket) => (
+        <AssignedToCell
+          ticket={ticket}
+          users={users}
+          onAssign={handleAssign}
+        />
+      ),
+    },
+    {
       key: 'priority',
       label: 'Priority',
       align: 'center',
@@ -160,12 +207,13 @@ const Tickets = () => {
     {
       label: 'Edit',
       icon: <EditIcon fontSize="small" />,
+      hidden: (row) => !row.isEditable,
       onClick: (row) => navigate(ROUTES.TICKET_EDIT.replace(':id', row.ticketId)),
     },
     {
       label: 'Delete',
       icon: <DeleteIcon fontSize="small" />,
-      onClick: (row) => console.log('delete', row.ticketId),
+      onClick: (row) => setDeleteId(row.ticketId),
     },
   ]
 
@@ -271,6 +319,17 @@ const Tickets = () => {
           />
         </TableWrapper>
       </TicketsPage>
+
+      <ConfirmationDialog
+        open={Boolean(deleteId)}
+        title="Delete Ticket"
+        message="Are you sure you want to delete this ticket? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="error"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   )
 }

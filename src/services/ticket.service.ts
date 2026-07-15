@@ -1,6 +1,6 @@
 import { http } from "../api/http";
 import type { PagedResponse } from "../models/common";
-import type { CreateTicketRequest, DropdownOption, SubCategory, Ticket, TicketPageRequest, UpdateTicketRequest } from "../models/ticket";
+import type { DropdownOption, SubCategory, Ticket, TicketAssignRequest, TicketPageRequest, UpsertTicketRequest } from "../models/ticket";
 
 export const getTickets = async (params: TicketPageRequest): Promise<PagedResponse<Ticket>> => {
     return http.post<PagedResponse<Ticket>>("/ticket/list", params);
@@ -10,12 +10,12 @@ export const getTicketById = async (id: string): Promise<Ticket> => {
     return http.get<Ticket>(`/ticket/${id}`);
 };
 
-export const createTicket = async (data: CreateTicketRequest): Promise<Ticket> => {
-    return http.post<Ticket>("/ticket", data);
+export const upsertTicket = async (data: UpsertTicketRequest) => {
+    http.post<Ticket>("/ticket/upsert", data);
 };
 
-export const updateTicket = async (data: UpdateTicketRequest): Promise<Ticket> => {
-    return http.put<Ticket>(`/ticket/${data.ticketId}`, data);
+export const deleteTicket = async (id: string) => {
+    return http.delete<Ticket>(`/ticket/delete/${id}`);
 };
 
 export const getCategories = async (): Promise<DropdownOption[]> => {
@@ -32,4 +32,8 @@ export const getStatusList = async (): Promise<DropdownOption[]> => {
 
 export const getPriorities = async (): Promise<DropdownOption[]> => {
     return http.get<DropdownOption[]>("/ticket/priority-list");
+};
+
+export const assignTicket = async (data: TicketAssignRequest): Promise<void> => {
+    return http.post<void>("/ticket/assign", data);
 };

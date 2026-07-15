@@ -48,6 +48,7 @@ export function useForm<T extends Record<string, any>>(
         newErrors[name] = error
         valid = false
       }
+      console.log("error......", error)
     }
     setErrors(newErrors)
     setTouched(Object.keys(rules).reduce((acc, k) => ({ ...acc, [k]: true }), {}))

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   Button,
@@ -12,8 +12,8 @@ import {
 import { ArrowBack } from '@mui/icons-material'
 import { useForm, required, minLength, maxLength } from '../../../utils/useForm'
 import { ROUTES } from '../../../routes/routeConstants'
-import { createTicket, getTicketById, updateTicket } from '../../../services/ticket.service'
-import type { TicketFormData } from '../../../models/ticket'
+import { getTicketById, upsertTicket } from '../../../services/ticket.service'
+import { getUsers } from '../../../services/user.service'
 import { GradientButton } from '../../Auth/AuthLayout/AuthLayout.styles'
 import {
   ErrorText,
@@ -29,19 +29,25 @@ import {
 } from './TicketForm.styles'
 import { toast } from '../../../utils/toastHelper'
 import { useDropdowns } from '../../../hooks/useDropdowns'
+import type { UpsertTicketRequest } from '../../../models/ticket'
+import type { UserResponse } from '../../../models/user'
+import { authStorage } from '../../../services/storage.service'
+import { Role } from '../../../models/auth'
 
-const initialValues: TicketFormData = {
+const initialValues: UpsertTicketRequest = {
   title: '',
   description: '',
-  priority: 0,
+  priorityId: 0,
   categoryId: 0,
   subCategoryId: 0,
+  statusId: 0,
+  assignedTo: null,
 }
 
 const validationRules = {
   title: [required('Title is required'), minLength(3, 'Title must be at least 3 characters'), maxLength(100)],
   description: [required('Description is required'), minLength(10, 'Description must be at least 10 characters'), maxLength(1000)],
-  priority: [required('Priority is required')],
+  priorityId: [required('Priority is required')],
   categoryId: [required('Category is required')],
   subCategoryId: [required('Sub-category is required')],
 }
@@ -50,18 +56,25 @@ const TicketForm = () => {
   const { id } = useParams<{ id: string }>()
   const isEdit = Boolean(id)
   const navigate = useNavigate()
+  const isAdmin = authStorage.getRole() === Role.ADMIN
 
-  const { categories, subCategories, priorities } = useDropdowns()
+  const { categories, subCategories, priorities, statusList } = useDropdowns()
+  const [agents, setAgents] = useState<UserResponse[]>([])
 
-  const { values, errors, setValue, setFieldTouched, validateAll, setValues } = useForm<TicketFormData>(
+  const { values, errors, setValue, setFieldTouched, validateAll, setValues } = useForm<UpsertTicketRequest>(
     initialValues,
     validationRules
   )
 
-  // Filter sub-categories by selected category
   const filteredSubCategories = subCategories.filter(
     (s) => s.categoryId === values.categoryId
   )
+
+  useEffect(() => {
+    if (isAdmin) {
+      getUsers({ page: 0, pageSize: 0, role: 2 }).then((res) => setAgents(res.items))
+    }
+  }, [isAdmin])
 
   useEffect(() => {
     if (!isEdit || !id) return
@@ -70,9 +83,11 @@ const TicketForm = () => {
       setValues({
         title: ticket.title,
         description: ticket.description,
-        priority: ticket.priorityId,
+        priorityId: ticket.priorityId,
         categoryId: ticket.categoryId,
         subCategoryId: ticket.subCategoryId,
+        statusId: ticket.statusId,
+        assignedTo: ticket.assignedTo,
       })
     }
     load()
@@ -83,10 +98,10 @@ const TicketForm = () => {
     if (!validateAll()) return
 
     if (isEdit && id) {
-      await updateTicket({ ...values, ticketId: id })
+      await upsertTicket({ ...values, ticketId: id })
       toast.success('Ticket updated successfully')
     } else {
-      await createTicket(values)
+      await upsertTicket(values)
       toast.success('Ticket created successfully')
     }
     navigate(ROUTES.TICKETS)
@@ -107,7 +122,7 @@ const TicketForm = () => {
         </HeaderLeft>
       </PageHeader>
 
-      <FormCard onSubmit={handleSubmit}>
+      <FormCard component="form" onSubmit={handleSubmit}>
         <FormGrid>
 
           {/* Title */}
@@ -139,7 +154,7 @@ const TicketForm = () => {
               value={values.categoryId}
               onChange={(e) => {
                 setValue('categoryId', Number(e.target.value))
-                setValue('subCategoryId', 0) // reset sub on category change
+                setValue('subCategoryId', 0)
               }}
               onBlur={() => setFieldTouched('categoryId')}
               error={Boolean(errors.categoryId)}
@@ -176,24 +191,64 @@ const TicketForm = () => {
 
           {/* Priority */}
           <FieldWrapper>
-            <FieldLabel htmlFor="priority">Priority *</FieldLabel>
+            <FieldLabel htmlFor="priorityId">Priority *</FieldLabel>
             <Select
-              id="priority"
+              id="priorityId"
               size="small"
               fullWidth
               displayEmpty
-              value={values.priority}
-              onChange={(e) => setValue('priority', e.target.value)}
-              onBlur={() => setFieldTouched('priority')}
-              error={Boolean(errors.priority)}
+              value={values.priorityId}
+              onChange={(e) => setValue('priorityId', e.target.value)}
+              onBlur={() => setFieldTouched('priorityId')}
+              error={Boolean(errors.priorityId)}
             >
-              <MenuItem value=""><em>Select priority</em></MenuItem>
+              <MenuItem value={0}><em>Select priority</em></MenuItem>
               {priorities.map((p) => (
                 <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
               ))}
             </Select>
-            {errors.priority && <ErrorText>{errors.priority}</ErrorText>}
+            {errors.priorityId && <ErrorText>{errors.priorityId}</ErrorText>}
           </FieldWrapper>
+
+          {/* Admin-only fields — only shown in edit mode */}
+          {isAdmin && isEdit && (
+            <>
+              {/* Status */}
+              <FieldWrapper>
+                <FieldLabel htmlFor="statusId">Status</FieldLabel>
+                <Select
+                  id="statusId"
+                  size="small"
+                  fullWidth
+                  displayEmpty
+                  value={values.statusId ?? 0}
+                  onChange={(e) => setValue('statusId', Number(e.target.value))}
+                >
+                  {statusList.map((s) => (
+                    <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
+                  ))}
+                </Select>
+              </FieldWrapper>
+
+              {/* Assigned To */}
+              <FieldWrapper>
+                <FieldLabel htmlFor="assignedTo">Assigned To</FieldLabel>
+                <Select
+                  id="assignedTo"
+                  size="small"
+                  fullWidth
+                  displayEmpty
+                  value={values.assignedTo ?? ''}
+                  onChange={(e) => setValue('assignedTo', e.target.value || null)}
+                >
+                  <MenuItem value="" disabled><em>Unassigned</em></MenuItem>
+                  {agents.map((u) => (
+                    <MenuItem key={u.userId} value={u.userId}>{u.name}</MenuItem>
+                  ))}
+                </Select>
+              </FieldWrapper>
+            </>
+          )}
 
           {/* Description */}
           <FullWidth>
@@ -220,7 +275,7 @@ const TicketForm = () => {
         <FormActions>
           <Button
             variant="outlined"
-            sx={{ textTransform: 'none', fontWeight: 600 }}
+            sx={{ textTransform: 'none', fontWeight: 600, marginTop: '8px' }}
             onClick={() => navigate(ROUTES.TICKETS)}
           >
             Cancel

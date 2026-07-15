@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { CircularProgress, IconButton, Tooltip, Typography } from '@mui/material'
+import { IconButton, Tooltip, Typography } from '@mui/material'
 import { ArrowBack, EditOutlined } from '@mui/icons-material'
 import { getTicketById } from '../../../services/ticket.service'
 import type { Ticket } from '../../../models/ticket'
@@ -19,28 +19,21 @@ import {
   ViewLabel,
   ViewValue,
 } from '../TicketForm/TicketForm.styles'
+import axios from 'axios'
 
 const TicketView = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [ticket, setTicket] = useState<Ticket | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
-    getTicketById(id).then((t) => {
-      setTicket(t)
-      setLoading(false)
+    getTicketById(id).then(setTicket).catch((error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        navigate(ROUTES.UNAUTHORIZED)
+      }
     })
   }, [id])
-
-  if (loading) {
-    return (
-      <PageRoot>
-        <CircularProgress sx={{ m: 'auto' }} />
-      </PageRoot>
-    )
-  }
 
   if (!ticket) return null
 
@@ -65,13 +58,13 @@ const TicketView = () => {
           </div>
         </HeaderLeft>
 
-        <GradientButton
+        {ticket.isEditable && <GradientButton
           variant="contained"
           startIcon={<EditOutlined />}
           onClick={() => navigate(editPath)}
         >
           Edit Ticket
-        </GradientButton>
+        </GradientButton>}
       </PageHeader>
 
       <FormCard>
@@ -114,6 +107,11 @@ const TicketView = () => {
           <ViewField>
             <ViewLabel>Sub-Category</ViewLabel>
             <ViewValue>{ticket.subCategory}</ViewValue>
+          </ViewField>
+
+          <ViewField>
+            <ViewLabel>Assigned To</ViewLabel>
+            <ViewValue>{ticket.assignedTo ?? '—'}</ViewValue>
           </ViewField>
 
           <Divider />

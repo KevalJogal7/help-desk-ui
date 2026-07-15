@@ -1,3 +1,5 @@
+import type { PagedRequest } from "./common";
+
 export interface Ticket {
   ticketId: string;
   ticketNumber: string;
@@ -13,32 +15,26 @@ export interface Ticket {
   categoryId: number;
   subCategory: string;
   subCategoryId: number;
+  assignedTo: string | null;
+  isEditable: boolean;
 }
 
-export interface TicketFormData {
+export interface UpsertTicketRequest {
+  ticketId?: string | null;
   title: string;
   description: string;
-  priority: number;
+  priorityId: number;
   categoryId: number;
   subCategoryId: number;
+  statusId?: number;
+  assignedTo?: string | null;
 }
 
-export interface CreateTicketRequest extends TicketFormData {}
-
-export interface UpdateTicketRequest extends TicketFormData {
-  ticketId: string;
-}
-
-export interface TicketPageRequest {
-  page: number;
-  pageSize: number;
-  search: string;
+export interface TicketPageRequest extends PagedRequest {
   category: number;
   subCategory: number;
   status: number;
   priority: number;
-  sortBy: string;
-  sortDirection: string;
 }
 
 export interface DropdownOption {
@@ -49,4 +45,9 @@ export interface DropdownOption {
 
 export interface SubCategory extends DropdownOption {
   categoryId: number;
+}
+
+export interface TicketAssignRequest {
+    ticketId: string;
+    assignedTo: string;
 }

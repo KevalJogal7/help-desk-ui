@@ -7,6 +7,14 @@ export interface BaseResponse<T> {
     timestamp: string;
 }
 
+export interface PagedRequest {
+    page: number;
+    pageSize: number;
+    search?: string;
+    sortBy?: string;
+    sortDirection?: "asc" | "desc";
+}
+
 export interface PagedResponse<T> {
   items: T[];
   totalCount: number;
