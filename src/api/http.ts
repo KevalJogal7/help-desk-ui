@@ -4,32 +4,36 @@ import type { BaseResponse } from "../models/common";
 import { toast } from "../utils/toastHelper";
 
 export const http = {
-    async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-        return request<T>(() => api.get<BaseResponse<T>>(url, config));
+    async get<T>(url: string, config?: AxiosRequestConfig, showSuccess: boolean = false): Promise<T> {
+        return request<T>(() => api.get<BaseResponse<T>>(url, config), showSuccess);
     },
 
-    async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-        return request<T>(() => api.post<BaseResponse<T>>(url, data, config));
+    async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig, showSuccess: boolean = false): Promise<T> {
+        return request<T>(() => api.post<BaseResponse<T>>(url, data, config), showSuccess);
     },
 
-    async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-        return request<T>(() => api.put<BaseResponse<T>>(url, data, config));
+    async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig, showSuccess: boolean = false): Promise<T> {
+        return request<T>(() => api.put<BaseResponse<T>>(url, data, config), showSuccess);
     },
 
-    async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
-        return request<T>(() => api.patch<BaseResponse<T>>(url, data, config));
+    async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig, showSuccess: boolean = false): Promise<T> {
+        return request<T>(() => api.patch<BaseResponse<T>>(url, data, config), showSuccess);
     },
 
-    async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-        return request<T>(() => api.delete<BaseResponse<T>>(url, config));
+    async delete<T>(url: string, config?: AxiosRequestConfig, showSuccess: boolean = false): Promise<T> {
+        return request<T>(() => api.delete<BaseResponse<T>>(url, config), showSuccess);
     },
 };
 
-async function request<T>(apiCall: () => Promise<{ data: BaseResponse<T> }>): Promise<T> {
+async function request<T>(apiCall: () => Promise<{ data: BaseResponse<T> }>, showSuccess: boolean): Promise<T> {
     try {
         const response = await apiCall();
 
         const result = response.data;
+
+        if(showSuccess && result.success) {
+            toast.success(result.message);
+        }
 
         if (!result.success) {
             throw new Error(result.message);

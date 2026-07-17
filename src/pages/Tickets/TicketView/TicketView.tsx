@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { IconButton, Tooltip, Typography } from '@mui/material'
+import { IconButton, MenuItem, Select, Tooltip, Typography } from '@mui/material'
 import { ArrowBack, EditOutlined } from '@mui/icons-material'
-import { getTicketById } from '../../../services/ticket.service'
-import type { Ticket } from '../../../models/ticket'
+import { getTicketById, statusUpdate } from '../../../services/ticket.service'
+import { TicketStatus, type DropdownOption, type StatusUpdateRequest, type Ticket } from '../../../models/ticket'
 import { ROUTES } from '../../../routes/routeConstants'
 import StatusChip from '../../../components/StatusChip/StatusChip'
 import { TICKET_PRIORITY_COLORS, TICKET_STATUS_COLORS } from '../../../components/StatusChip/chipColors'
 import { GradientButton } from '../../Auth/AuthLayout/AuthLayout.styles'
 import {
   Divider,
+  FieldLabel,
+  FieldWrapper,
   FormCard,
   HeaderLeft,
   PageHeader,
@@ -19,21 +21,44 @@ import {
   ViewLabel,
   ViewValue,
 } from '../TicketForm/TicketForm.styles'
-import axios from 'axios'
+import CommentSection from '../CommentSection/CommentSection'
+import { useDropdowns } from '../../../hooks/useDropdowns'
 
 const TicketView = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [ticket, setTicket] = useState<Ticket | null>(null)
+  const [status, setStatus] = useState<number>(0);
+  const [statusOptions, setStatusOptions] = useState<DropdownOption[]>([])
+  const { statusList } = useDropdowns()
+
+  useEffect(() => {
+    const allowed: number[] = [
+            TicketStatus.IN_PROGRESS,
+            TicketStatus.PENDING_CUSTOMER,
+            TicketStatus.RESOLVED,
+            TicketStatus.CLOSED,];
+
+    setStatusOptions(statusList.map((s) => ({...s, isActive: allowed.includes(s.id) })));
+  }, [statusList]);
 
   useEffect(() => {
     if (!id) return
-    getTicketById(id).then(setTicket).catch((error) => {
-      if (axios.isAxiosError(error) && error.response?.status === 403) {
-        navigate(ROUTES.UNAUTHORIZED)
-      }
+    getTicketById(id).then((response) => {
+      setTicket(response);
+      setStatus(response.statusId);
     })
   }, [id])
+
+  const handleStatusChange = async (value: number) => {
+    if(ticket) {
+      const request: StatusUpdateRequest = {
+        statusId: value,
+        ticketId: ticket.ticketId
+      }
+      await statusUpdate(request);
+    }
+  }
 
   if (!ticket) return null
 
@@ -81,23 +106,33 @@ const TicketView = () => {
           </ViewField>
 
           <ViewField>
-            <ViewLabel>Created On</ViewLabel>
-            <ViewValue>{new Date(ticket.createdOn).toLocaleString()}</ViewValue>
-          </ViewField>
-
-          <ViewField>
             <ViewLabel>Priority</ViewLabel>
             <ViewValue>
               <StatusChip label={ticket.priority} colorMap={TICKET_PRIORITY_COLORS} dot />
             </ViewValue>
           </ViewField>
 
-          <ViewField>
+          {!ticket.canUpdateStatus ? <ViewField>
             <ViewLabel>Status</ViewLabel>
             <ViewValue>
               <StatusChip label={ticket.status} colorMap={TICKET_STATUS_COLORS} dot />
             </ViewValue>
-          </ViewField>
+          </ViewField> 
+          : <FieldWrapper>
+            <FieldLabel htmlFor="statusId">Status</FieldLabel>
+              <Select
+                id="statusId"
+                size="small"
+                fullWidth
+                displayEmpty
+                value={status}
+                onChange={(e) => handleStatusChange(Number(e.target.value))}
+              >
+                {statusOptions.map((s) => (
+                  <MenuItem disabled={!s.isActive} key={s.id} value={s.id}>{s.name}</MenuItem>
+                ))}
+            </Select>
+          </FieldWrapper>}
 
           <ViewField>
             <ViewLabel>Category</ViewLabel>
@@ -110,8 +145,13 @@ const TicketView = () => {
           </ViewField>
 
           <ViewField>
+            <ViewLabel>Created On</ViewLabel>
+            <ViewValue>{new Date(ticket.createdOn).toLocaleString()}</ViewValue>
+          </ViewField>
+
+          <ViewField>
             <ViewLabel>Assigned To</ViewLabel>
-            <ViewValue>{ticket.assignedTo ?? '—'}</ViewValue>
+            <ViewValue>{ticket.assignedToName ?? '—'}</ViewValue>
           </ViewField>
 
           <Divider />
@@ -123,6 +163,8 @@ const TicketView = () => {
 
         </ViewGrid>
       </FormCard>
+
+      <CommentSection {...ticket}/>
     </PageRoot>
   )
 }

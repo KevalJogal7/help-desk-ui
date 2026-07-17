@@ -48,7 +48,6 @@ export function useForm<T extends Record<string, any>>(
         newErrors[name] = error
         valid = false
       }
-      console.log("error......", error)
     }
     setErrors(newErrors)
     setTouched(Object.keys(rules).reduce((acc, k) => ({ ...acc, [k]: true }), {}))
@@ -86,5 +85,19 @@ export const maxLength =
   (max: number, message?: string) =>
   (value: string): string | null => {
     if (value && value.length > max) return message ?? `Maximum ${max} characters allowed`
+    return null
+  }
+
+export const isEmail =
+  (message = 'Enter a valid email address') =>
+  (value: string): string | null => {
+    if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return message
+    return null
+  }
+
+export const matchesPattern =
+  (pattern: RegExp, message: string) =>
+  (value: string): string | null => {
+    if (value && !pattern.test(value)) return message
     return null
   }

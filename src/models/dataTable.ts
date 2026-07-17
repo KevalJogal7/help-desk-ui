@@ -38,4 +38,5 @@ export interface DataTableProps<T> {
   sortBy?: string;
   sortDescending?: boolean;
   onSort?: (field: string) => void;
+  isRowDisabled?: (row: T) => boolean;
 }

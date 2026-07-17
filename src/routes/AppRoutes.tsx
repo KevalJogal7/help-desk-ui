@@ -10,6 +10,7 @@ const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword/ResetPasswo
 const Dashboard = lazy(() => import("../pages/Dashboard/Dashboard"));
 const Forbidden = lazy(() => import("../pages/Forbidden/Forbidden"));
 const Users = lazy(() => import("../pages/Users/Users"));
+const UserForm = lazy(() => import("../pages/Users/UserForm/UserForm"));
 const Tickets = lazy(() => import("../pages/Tickets/Tickets"));
 const TicketForm = lazy(() => import("../pages/Tickets/TicketForm/TicketForm"));
 const TicketView = lazy(() => import("../pages/Tickets/TicketView/TicketView"));
@@ -35,10 +36,15 @@ export const router = createBrowserRouter([
             {
                 path: ROUTES.USERS,
                 element: <Users />
-            }
+            },
+            {
+                path: ROUTES.USER_NEW,
+                element: <UserForm />
+            },
+            {
+                path: ROUTES.USER_EDIT,
+                element: <UserForm />
+            },
         ]
     }
-    // { path: "/users", element: <Users /> },
-    // { path: "/users/:id", element: <UserDetails /> },
-    // { path: "*", element: <NotFound /> },
 ]);

@@ -1,6 +1,6 @@
 import { http } from "../api/http";
 import type { PagedResponse } from "../models/common";
-import type { DropdownOption, SubCategory, Ticket, TicketAssignRequest, TicketPageRequest, UpsertTicketRequest } from "../models/ticket";
+import type { DropdownOption, StatusUpdateRequest, SubCategory, Ticket, TicketAssignRequest, TicketPageRequest, UpsertTicketRequest } from "../models/ticket";
 
 export const getTickets = async (params: TicketPageRequest): Promise<PagedResponse<Ticket>> => {
     return http.post<PagedResponse<Ticket>>("/ticket/list", params);
@@ -35,5 +35,9 @@ export const getPriorities = async (): Promise<DropdownOption[]> => {
 };
 
 export const assignTicket = async (data: TicketAssignRequest): Promise<void> => {
-    return http.post<void>("/ticket/assign", data);
+    return http.post<void>("/ticket/assign", data, undefined, true);
+};
+
+export const statusUpdate = async (data: StatusUpdateRequest): Promise<void> => {
+    return http.post<void>("/ticket/status-change", data, undefined, true);
 };

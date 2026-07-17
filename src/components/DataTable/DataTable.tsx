@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import type { ColumnDef, DataTableProps } from '../../models/dataTable'
-import { PaginationBar, ScrollableTableContainer, StickyCell } from './DataTable.styles'
+import { DisabledTableRow, PaginationBar, ScrollableTableContainer, StickyCell } from './DataTable.styles'
 import { useState } from 'react'
 
 function DataTable<T>({
@@ -34,6 +34,7 @@ function DataTable<T>({
   sortBy,
   sortDescending,
   onSort,
+  isRowDisabled,
 }: DataTableProps<T>) {
   const visibleColumns = columns.filter((col) => !col.hide)
 
@@ -127,79 +128,65 @@ function DataTable<T>({
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((row) => (
-                <TableRow key={rowKey(row)} hover>
-                  {visibleColumns.map((col) =>
-                    col.sticky ? (
-                      <StickyCell key={col.key} align={col.align} className={col.cellClassName}>
-                        {renderCell(col, row)}
+              data.map((row) => {
+                const disabled = isRowDisabled?.(row) ?? false
+                const RowComponent = disabled ? DisabledTableRow : TableRow
+                return (
+                  <RowComponent key={rowKey(row)} hover={!disabled}>
+                    {visibleColumns.map((col) =>
+                      col.sticky ? (
+                        <StickyCell key={col.key} align={col.align} className={col.cellClassName}>
+                          {renderCell(col, row)}
+                        </StickyCell>
+                      ) : (
+                        <TableCell key={col.key} align={col.align} className={col.cellClassName}>
+                          {renderCell(col, row)}
+                        </TableCell>
+                      )
+                    )}
+                    {showAction && (
+                      <StickyCell sx={{ padding: 0 }}>
+                        <IconButton
+                          size="small"
+                          disabled={disabled}
+                          onClick={(e) => handleMenuOpen(e, row)}
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
                       </StickyCell>
-                    ) : (
-                      <TableCell key={col.key} align={col.align} className={col.cellClassName}>
-                        {renderCell(col, row)}
-                      </TableCell>
-                    )
-                  )}
-                  {showAction && (
-                    <StickyCell sx={{ padding: 0 }}>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleMenuOpen(e, row)}
-                      >
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
-                    </StickyCell>
-                  )}
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                  >
-                    {selectedRow &&
-                      actions
-                        ?.filter(action => !action.hidden?.(selectedRow))
-                        .map(action => (
-                          <MenuItem
-                            key={action.label}
-                            disabled={action.disabled?.(selectedRow)}
-                            onClick={() => {
-                              action.onClick(selectedRow);
-                              handleMenuClose();
-                            }}
-                            sx={{
-                              minWidth: 180,
-                              py: 1,
-                              px: 1.5,
-                              gap: 1,
-                            }}
-                          >
-                            {action.icon && (
-                              <ListItemIcon
-                                sx={{
-                                  minWidth: 32,
-                                  color: "text.secondary",
-                                }}
-                              >
-                                {action.icon}
-                              </ListItemIcon>
-                            )}
-
-                            <ListItemText
-                              primary={action.label}
-                            />
-                          </MenuItem>
-                        ))}
-                  </Menu>
-                </TableRow>
-              ))
+                    )}
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleMenuClose}
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                      {selectedRow &&
+                        actions
+                          ?.filter((action) => !action.hidden?.(selectedRow))
+                          .map((action) => (
+                            <MenuItem
+                              key={action.label}
+                              disabled={action.disabled?.(selectedRow)}
+                              onClick={() => {
+                                action.onClick(selectedRow)
+                                handleMenuClose()
+                              }}
+                              sx={{ minWidth: 180, py: 1, px: 1.5, gap: 1 }}
+                            >
+                              {action.icon && (
+                                <ListItemIcon sx={{ minWidth: 32, color: 'text.secondary' }}>
+                                  {action.icon}
+                                </ListItemIcon>
+                              )}
+                              <ListItemText primary={action.label} />
+                            </MenuItem>
+                          ))}
+                    </Menu>
+                  </RowComponent>
+                )
+              })
             )}
           </TableBody>
         </Table>

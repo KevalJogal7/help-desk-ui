@@ -14,3 +14,11 @@ export interface UserListRequest extends PagedRequest {
   role: number;
 }
 
+export interface UpsertUserRequest {
+  userId?: string | null;
+  name: string;
+  email: string;
+  password?: string | null;
+  roleId: number;
+  isActive: boolean;
+}

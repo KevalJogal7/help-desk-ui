@@ -60,6 +60,7 @@ const TicketForm = () => {
 
   const { categories, subCategories, priorities, statusList } = useDropdowns()
   const [agents, setAgents] = useState<UserResponse[]>([])
+  const [canUpdateStatus, setCanUpdateStatus] = useState<boolean>(false)
 
   const { values, errors, setValue, setFieldTouched, validateAll, setValues } = useForm<UpsertTicketRequest>(
     initialValues,
@@ -80,6 +81,7 @@ const TicketForm = () => {
     if (!isEdit || !id) return
     const load = async () => {
       const ticket = await getTicketById(id)
+      setCanUpdateStatus(ticket.canUpdateStatus)
       setValues({
         title: ticket.title,
         description: ticket.description,
@@ -211,7 +213,7 @@ const TicketForm = () => {
           </FieldWrapper>
 
           {/* Admin-only fields — only shown in edit mode */}
-          {isAdmin && isEdit && (
+          {isAdmin && isEdit && canUpdateStatus && (
             <>
               {/* Status */}
               <FieldWrapper>

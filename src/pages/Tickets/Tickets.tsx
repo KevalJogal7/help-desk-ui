@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import DeleteIcon from '@mui/icons-material/Delete'
 import type { Ticket, TicketPageRequest } from '../../models/ticket'
-import { deleteTicket, getTickets } from '../../services/ticket.service'
+import { assignTicket, deleteTicket, getTickets } from '../../services/ticket.service'
 import type { ColumnDef, TableAction } from '../../models/dataTable'
 import DataTable from '../../components/DataTable/DataTable'
 import StatusChip from '../../components/StatusChip/StatusChip'
@@ -26,8 +26,7 @@ import { ROUTES } from '../../routes/routeConstants'
 import { useDropdowns } from '../../hooks/useDropdowns'
 import { getUsers } from '../../services/user.service'
 import type { UserListRequest, UserResponse } from '../../models/user'
-import AssignedToCell from '../../components/AssignedToCell/AssignedToCell'
-import { assignTicket } from '../../services/ticket.service'
+import AssignedToCell from './AssignedToCell/AssignedToCell'
 import ConfirmationDialog from '../../components/ConfirmationDialog'
 
 const Tickets = () => {
@@ -154,19 +153,16 @@ const Tickets = () => {
       key: 'category',
       label: 'Category',
       cellClassName: 'nowrap',
-      sortable: true
     },
     {
       key: 'subCategory',
       label: 'Sub-Category',
       cellClassName: 'nowrap',
-      sortable: true
     },
     {
       key: 'createdBy',
       label: 'Created By',
       cellClassName: 'nowrap',
-      sortable: true
     },
     {
       key: 'assignedTo',
@@ -208,12 +204,19 @@ const Tickets = () => {
       label: 'Edit',
       icon: <EditIcon fontSize="small" />,
       hidden: (row) => !row.isEditable,
-      onClick: (row) => navigate(ROUTES.TICKET_EDIT.replace(':id', row.ticketId)),
+      onClick: (row) => {
+        if (!row.isEditable) return;
+        navigate(ROUTES.TICKET_EDIT.replace(':id', row.ticketId))
+      },
     },
     {
       label: 'Delete',
       icon: <DeleteIcon fontSize="small" />,
-      onClick: (row) => setDeleteId(row.ticketId),
+      hidden: (row) => !row.isEditable,
+      onClick: (row) => {
+        if (!row.isEditable) return;
+        setDeleteId(row.ticketId)
+      },
     },
   ]
 
@@ -316,6 +319,7 @@ const Tickets = () => {
             sortBy={ticketRequest.sortBy}
             sortDescending={ticketRequest.sortDirection === "desc"}
             onSort={handleSort}
+            isRowDisabled={(ticket) => ticket.isDeleted}
           />
         </TableWrapper>
       </TicketsPage>

@@ -16,7 +16,10 @@ export interface Ticket {
   subCategory: string;
   subCategoryId: number;
   assignedTo: string | null;
+  assignedToName: string | null;
   isEditable: boolean;
+  canUpdateStatus: boolean;
+  isDeleted: boolean;
 }
 
 export interface UpsertTicketRequest {
@@ -51,3 +54,20 @@ export interface TicketAssignRequest {
     ticketId: string;
     assignedTo: string;
 }
+
+export interface StatusUpdateRequest {
+    ticketId: string;
+    statusId: number;
+}
+
+export const TicketStatus = {
+    NEW: 1,
+    ASSIGNED: 2,
+    IN_PROGRESS: 3,
+    PENDING_CUSTOMER: 4,
+    RESOLVED: 5,
+    CLOSED: 6
+} as const;
+
+export type TicketStatus =
+    typeof TicketStatus[keyof typeof TicketStatus];

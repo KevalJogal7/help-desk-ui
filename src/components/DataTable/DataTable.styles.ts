@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles'
-import { TableCell, TableContainer } from '@mui/material'
+import { TableCell, TableContainer, TableRow } from '@mui/material'
 
 export const ScrollableTableContainer = styled(TableContainer)({
   flex: 1,
@@ -31,5 +31,17 @@ export const StickyCell = styled(TableCell)(({ theme }) => ({
   boxShadow: '-2px 0 6px rgba(0,0,0,0.06)',
   'thead &': {
     zIndex: 3,
+  },
+}))
+
+export const DisabledTableRow = styled(TableRow)(({ theme }) => ({
+  opacity: 0.45,
+  pointerEvents: 'none',
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? 'rgba(255,255,255,0.03)'
+      : 'rgba(0,0,0,0.03)',
+  '& td': {
+    color: theme.palette.custom.mutedText,
   },
 }))
