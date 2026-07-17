@@ -22,14 +22,7 @@ import {
 } from '../Tickets/Tickets.styles'
 import ConfirmationDialog from '../../components/ConfirmationDialog'
 import { ROUTES } from '../../routes/routeConstants'
-import { colors } from '../../config/colors'
-import type { ChipColorConfig } from '../../components/StatusChip/StatusChip'
-
-const ROLE_COLORS: Record<string, ChipColorConfig> = {
-  'Admin':         { background: colors.purple.bg,  color: colors.purple.text },
-  'Support Agent': { background: colors.info.bg,    color: colors.info.text },
-  'User':          { background: colors.neutral.bg, color: colors.neutral.text },
-}
+import { ROLE_COLORS } from '../../components/StatusChip/chipColors'
 
 const defaultRequest: UserListRequest = {
   page: 0,

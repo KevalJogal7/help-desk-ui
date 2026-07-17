@@ -20,9 +20,10 @@ import {
   maxLength,
   isEmail,
   matchesPattern,
+  PASSWORD_PATTERN,
 } from '../../../utils/useForm'
 import { ROUTES } from '../../../routes/routeConstants'
-import { getUserById, toggleStatus, upsertUser } from '../../../services/user.service'
+import { getUserById, upsertUser } from '../../../services/user.service'
 import type { UpsertUserRequest } from '../../../models/user'
 import { GradientButton } from '../../Auth/AuthLayout/AuthLayout.styles'
 import {
@@ -37,9 +38,6 @@ import {
   PageRoot,
 } from '../../Tickets/TicketForm/TicketForm.styles'
 import { toast } from '../../../utils/toastHelper'
-
-const PASSWORD_PATTERN =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/
 
 const initialValues: UpsertUserRequest = {
   name: '',

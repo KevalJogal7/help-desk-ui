@@ -60,7 +60,7 @@ const Navbar = () => {
           onClose={handleClose}
           slotProps={{ list: { 'aria-labelledby': buttonId } }}
         >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
+          <MenuItem onClick={() => { handleClose(); navigate(ROUTES.PROFILE) }}>Profile</MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </NavRight>

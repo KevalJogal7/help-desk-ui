@@ -64,6 +64,8 @@ export function useForm<T extends Record<string, any>>(
 }
 
 // ── Common validators ──────────────────────────────────────────────────────────
+export const PASSWORD_PATTERN =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&^#()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/
 
 export const required =
   (message = 'This field is required') =>

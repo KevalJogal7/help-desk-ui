@@ -1,5 +1,6 @@
 import { http } from "../api/http";
 import type { ForgotPasswordRequest, LoginRequest, LoginResponse, ResetPasswordRequest, SSOLoginRequest } from "../models/auth";
+import type { ChangePasswordRequest, ProfileResponse, UpdateProfileRequest } from "../models/profile";
 import { authStorage } from "./storage.service";
 
 export const login = async (request: LoginRequest): Promise<LoginResponse> => {
@@ -21,3 +22,15 @@ export const forgotPassword = async (request: ForgotPasswordRequest): Promise<vo
 export const resetPassword = async (request: ResetPasswordRequest): Promise<void> => {
     await http.post("/auth/reset-password", request);
 };
+
+export const getProfile = async (): Promise<ProfileResponse> => {
+  return http.get<ProfileResponse>('/auth/profile')
+}
+
+export const updateProfile = async (data: UpdateProfileRequest): Promise<ProfileResponse> => {
+  return http.put<ProfileResponse>('/auth/update-profile', data, undefined, true)
+}
+
+export const changePassword = async (data: ChangePasswordRequest): Promise<void> => {
+  return http.put<void>('/auth/change-password', data, undefined, true)
+}

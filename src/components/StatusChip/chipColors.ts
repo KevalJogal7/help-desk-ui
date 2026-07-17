@@ -18,3 +18,14 @@ export const TICKET_PRIORITY_COLORS: Record<string, ChipColorConfig> = {
     'High':     { background: colors.error.bg,   color: colors.error.text },
     'Critical': { background: colors.purple.bg,  color: colors.purple.text },
 }
+
+export const ROLE_COLORS: Record<string, ChipColorConfig> = {
+  'Admin':           { background: colors.purple.bg,  color: colors.purple.text },
+  'Support Agent': { background: colors.info.bg,    color: colors.info.text },
+  'User':            { background: colors.neutral.bg, color: colors.neutral.text },
+}
+
+export const STATUS_COLORS: Record<string, ChipColorConfig> = {
+  Active:   { background: colors.success.bg, color: colors.success.text },
+  Inactive: { background: colors.error.bg,   color: colors.error.text },
+}
