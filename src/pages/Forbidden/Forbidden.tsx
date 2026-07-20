@@ -1,5 +1,5 @@
 import { Button, Typography } from '@mui/material'
-import { LockPerson, ArrowBack, Home } from '@mui/icons-material'
+import { LockPerson, ArrowBack } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../routes/routeConstants'
 import { ActionsRow, ForbiddenCard, ForbiddenRoot, IconWrapper } from './Forbidden.styles'
@@ -9,7 +9,7 @@ const Forbidden = () => {
 
   const handleGoBack = () => {
     if (window.history.length > 1) navigate(-1)
-    else navigate(ROUTES.DASHBOARD)
+    else navigate(ROUTES.TICKETS)
   }
 
   return (
@@ -36,14 +36,6 @@ const Forbidden = () => {
             sx={{ textTransform: 'none', fontWeight: 600 }}
           >
             Go back
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Home />}
-            onClick={() => navigate(ROUTES.DASHBOARD)}
-            sx={{ textTransform: 'none', fontWeight: 600, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-          >
-            Go to Dashboard
           </Button>
         </ActionsRow>
       </ForbiddenCard>

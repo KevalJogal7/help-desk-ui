@@ -1,5 +1,5 @@
 import type { ChipColorConfig } from './StatusChip'
-import { colors } from '../../config/colors'
+import { colors } from '../../config/theme'
 
 export const TICKET_STATUS_COLORS: Record<string, ChipColorConfig> = {
     'New':               { background: colors.teal.bg,         color: colors.teal.text },

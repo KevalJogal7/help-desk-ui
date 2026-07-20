@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import {
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,17 +7,7 @@ import {
   DialogTitle,
 } from '@mui/material'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
-
-export interface ConfirmationDialogProps {
-  open: boolean
-  title?: string
-  message?: string
-  confirmLabel?: string
-  cancelLabel?: string
-  variant?: 'error' | 'warning' | 'primary'
-  onConfirm: () => Promise<void> | void
-  onCancel: () => void
-}
+import type { ConfirmationDialogProps } from '../models/common';
 
 const ConfirmationDialog = ({
   open,

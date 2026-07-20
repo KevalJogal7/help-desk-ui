@@ -28,7 +28,7 @@ import {
   PageRoot,
 } from './TicketForm.styles'
 import { toast } from '../../../utils/toastHelper'
-import { useDropdowns } from '../../../hooks/useDropdowns'
+import { useDropdowns } from '../../../utils/useDropdowns'
 import type { UpsertTicketRequest } from '../../../models/ticket'
 import type { UserResponse } from '../../../models/user'
 import { authStorage } from '../../../services/storage.service'
@@ -124,7 +124,7 @@ const TicketForm = () => {
         </HeaderLeft>
       </PageHeader>
 
-      <FormCard component="form" onSubmit={handleSubmit}>
+      <FormCard as="form" onSubmit={handleSubmit}>
         <FormGrid>
 
           {/* Title */}

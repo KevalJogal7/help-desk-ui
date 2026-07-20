@@ -37,3 +37,14 @@ export interface ToastMessage {
 export interface ToastState {
     toasts: ToastMessage[];
 }
+
+export interface ConfirmationDialogProps {
+  open: boolean
+  title?: string
+  message?: string
+  confirmLabel?: string
+  cancelLabel?: string
+  variant?: 'error' | 'warning' | 'primary'
+  onConfirm: () => Promise<void> | void
+  onCancel: () => void
+}

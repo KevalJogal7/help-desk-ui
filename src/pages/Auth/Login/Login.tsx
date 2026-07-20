@@ -35,17 +35,10 @@ export default function Login() {
   useEffect(() => {
     const loginWithBackend = async () => {
       if (accounts.length === 0) return
-      try {
-        const response = await instance.acquireTokenSilent({
-          ...loginRequest,
-          account: accounts[0],
-        })
+        const response = await instance.acquireTokenSilent({ ...loginRequest, account: accounts[0] })
         const request: SSOLoginRequest = { token: response.idToken }
         await ssoLogin(request)
-        navigate(ROUTES.DASHBOARD)
-      } catch {
-        // error toast is handled globally in http.ts
-      }
+        navigate(ROUTES.TICKETS)
     }
     loginWithBackend()
   }, [accounts, instance])
@@ -53,7 +46,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await login({ email, password })
-    navigate(ROUTES.DASHBOARD)
+    navigate(ROUTES.TICKETS)
   }
 
   const handleLoginWithSSO = () => {

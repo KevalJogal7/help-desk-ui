@@ -1,5 +1,24 @@
 import { createTheme } from '@mui/material/styles'
 
+// ─── Semantic color palette ───────────────────────────────────────────────────
+// Fixed colors used for status chips, priority chips, bar charts etc.
+// These do not change between light and dark mode.
+
+export const colors = {
+  brand:        { bg: '#ede9ff', text: '#4c35b5' },
+  info:         { bg: '#e3f2fd', text: '#1565c0' },
+  success:      { bg: '#e8f5e9', text: '#2e7d32' },
+  successLight: { bg: '#f1f8e9', text: '#558b2f' },
+  warning:      { bg: '#fff8e1', text: '#e65100' },
+  error:        { bg: '#fce4ec', text: '#c62828' },
+  errorStrong:  { bg: '#ffebee', text: '#b71c1c' },
+  neutral:      { bg: '#f5f5f5', text: '#616161' },
+  neutralDark:  { bg: '#eceff1', text: '#37474f' },
+  teal:         { bg: '#e0f2f1', text: '#00695c' },
+  orange:       { bg: '#fff3e0', text: '#e65100' },
+  purple:       { bg: '#f3e5f5', text: '#6a1b9a' },
+} as const
+
 // ─── Custom palette token definitions ────────────────────────────────────────
 // Add every app-specific color here. Access via theme.palette.custom.X anywhere.
 

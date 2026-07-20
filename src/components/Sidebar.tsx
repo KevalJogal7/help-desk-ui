@@ -12,10 +12,12 @@ const Sidebar = () => {
     <SidebarRoot>
       <SidebarLogo>HelpDesk</SidebarLogo>
       <SidebarNav>
-        <NavLink to={ROUTES.DASHBOARD}>
-          <DashboardIcon fontSize="medium" />
-          Dashboard
-        </NavLink>
+        {authStorage.getRole() === Role.ADMIN && (
+          <NavLink to={ROUTES.DASHBOARD}>
+            <DashboardIcon fontSize="medium" />
+            Dashboard
+          </NavLink>
+        )}
         <NavLink to={ROUTES.TICKETS}>
           <LocalActivityIcon fontSize="medium" />
           Tickets

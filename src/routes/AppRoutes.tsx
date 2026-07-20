@@ -24,7 +24,6 @@ export const router = createBrowserRouter([
     {
         element: <ProtectedRoute />,
         children: [
-            { path: ROUTES.DASHBOARD, element: <Dashboard /> },
             { path: ROUTES.TICKETS, element: <Tickets /> },
             { path: ROUTES.TICKET_NEW, element: <TicketForm /> },
             { path: ROUTES.TICKET_VIEW, element: <TicketView /> },
@@ -35,6 +34,7 @@ export const router = createBrowserRouter([
     {
         element: <ProtectedRoute allowedRoles={[Role.ADMIN]} />,
         children: [
+            { path: ROUTES.DASHBOARD, element: <Dashboard /> },
             {
                 path: ROUTES.USERS,
                 element: <Users />

@@ -22,7 +22,7 @@ import {
   ViewValue,
 } from '../TicketForm/TicketForm.styles'
 import CommentSection from '../CommentSection/CommentSection'
-import { useDropdowns } from '../../../hooks/useDropdowns'
+import { useDropdowns } from '../../../utils/useDropdowns'
 
 const TicketView = () => {
   const { id } = useParams<{ id: string }>()

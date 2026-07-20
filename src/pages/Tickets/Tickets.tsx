@@ -23,7 +23,7 @@ import {
   TicketsToolbar,
 } from './Tickets.styles'
 import { ROUTES } from '../../routes/routeConstants'
-import { useDropdowns } from '../../hooks/useDropdowns'
+import { useDropdowns } from '../../utils/useDropdowns'
 import { getUsers } from '../../services/user.service'
 import type { UserListRequest, UserResponse } from '../../models/user'
 import AssignedToCell from './AssignedToCell/AssignedToCell'
@@ -36,7 +36,6 @@ const Tickets = () => {
   const [users, setUsers] = useState<UserResponse[]>([])
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  // Dropdowns from Redux (fetched once, cached globally)
   const { categories, subCategories, priorities, statusList } = useDropdowns()
 
   // Filters
