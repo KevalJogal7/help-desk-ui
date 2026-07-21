@@ -29,7 +29,7 @@ import {
 } from './TicketForm.styles'
 import { toast } from '../../../utils/toastHelper'
 import { useDropdowns } from '../../../utils/useDropdowns'
-import type { UpsertTicketRequest } from '../../../models/ticket'
+import { TicketStatus, type UpsertTicketRequest } from '../../../models/ticket'
 import type { UserResponse } from '../../../models/user'
 import { authStorage } from '../../../services/storage.service'
 import { Role } from '../../../models/auth'
@@ -227,7 +227,7 @@ const TicketForm = () => {
                   onChange={(e) => setValue('statusId', Number(e.target.value))}
                 >
                   {statusList.map((s) => (
-                    <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
+                    <MenuItem disabled={s.id <= TicketStatus.ASSIGNED} key={s.id} value={s.id}>{s.name}</MenuItem>
                   ))}
                 </Select>
               </FieldWrapper>

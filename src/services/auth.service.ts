@@ -15,6 +15,13 @@ export const ssoLogin = async (request: SSOLoginRequest): Promise<LoginResponse>
     return response;
 };
 
+export const withRefreshToken = async (): Promise<LoginResponse> => {
+   const refreshToken = authStorage.getRefreshToken();
+    const response = await http.post<LoginResponse>("/auth/refresh-token", {refreshToken: refreshToken});
+    authStorage.setAuth(response);
+    return response;
+};
+
 export const forgotPassword = async (request: ForgotPasswordRequest): Promise<void> => {
     await http.post("/auth/forgot-password", request);
 };

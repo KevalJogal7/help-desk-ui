@@ -18,9 +18,16 @@ export interface ForgotPasswordRequest {
     email: string;
 }
 
-export interface ResetPasswordRequest {
+export interface RefreshTokenRequest {
+    refreshToken: string;
+}
+
+export interface ResetPasswordForm {
+  newPassword: string
+  confirmPassword: string
+}
+export interface ResetPasswordRequest extends ResetPasswordForm {
     token: string;
-    newPassword: string;
 }
 
 export const Role = {

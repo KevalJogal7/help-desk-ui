@@ -23,42 +23,46 @@ import {
 } from '../TicketForm/TicketForm.styles'
 import CommentSection from '../CommentSection/CommentSection'
 import { useDropdowns } from '../../../utils/useDropdowns'
+import ConfirmationDialog from '../../../components/ConfirmationDialog'
 
 const TicketView = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [ticket, setTicket] = useState<Ticket | null>(null)
   const [status, setStatus] = useState<number>(0);
-  const [statusOptions, setStatusOptions] = useState<DropdownOption[]>([])
+  const [openConfirm, setOpenConfirm] = useState<boolean>(false);
   const { statusList } = useDropdowns()
 
-  useEffect(() => {
-    const allowed: number[] = [
-            TicketStatus.IN_PROGRESS,
-            TicketStatus.PENDING_CUSTOMER,
-            TicketStatus.RESOLVED,
-            TicketStatus.CLOSED,];
-
-    setStatusOptions(statusList.map((s) => ({...s, isActive: allowed.includes(s.id) })));
-  }, [statusList]);
-
-  useEffect(() => {
+  const loadTicketDetails = () => {
     if (!id) return
     getTicketById(id).then((response) => {
       setTicket(response);
       setStatus(response.statusId);
     })
+  }
+
+  useEffect(() => {
+    loadTicketDetails();
   }, [id])
 
   const handleStatusChange = async (value: number) => {
+    if(value !== TicketStatus.CLOSED) {
+      await OnChangeStatus(value);
+      return;
+    }
+    setOpenConfirm(true);
+  }
+
+  const OnChangeStatus = async (value: number) => {
     if(ticket) {
       const request: StatusUpdateRequest = {
         statusId: value,
         ticketId: ticket.ticketId
       }
       await statusUpdate(request);
+      loadTicketDetails();
     }
-  }
+  }  
 
   if (!ticket) return null
 
@@ -128,8 +132,8 @@ const TicketView = () => {
                 value={status}
                 onChange={(e) => handleStatusChange(Number(e.target.value))}
               >
-                {statusOptions.map((s) => (
-                  <MenuItem disabled={!s.isActive} key={s.id} value={s.id}>{s.name}</MenuItem>
+                {statusList.map((s) => (
+                  <MenuItem disabled={s.id <= TicketStatus.ASSIGNED} key={s.id} value={s.id}>{s.name}</MenuItem>
                 ))}
             </Select>
           </FieldWrapper>}
@@ -165,7 +169,18 @@ const TicketView = () => {
       </FormCard>
 
       <CommentSection {...ticket}/>
+        <ConfirmationDialog
+          open={openConfirm}
+          title="Close Ticket"
+          message="Are you sure you want to close this ticket? This action cannot be undone."
+          confirmLabel="Confirm"
+          cancelLabel="Cancel"
+          variant="error"
+          onConfirm={() => {OnChangeStatus(TicketStatus.CLOSED); setOpenConfirm(false);}}
+          onCancel={() => setOpenConfirm(false)}
+        />
     </PageRoot>
+    
   )
 }
 

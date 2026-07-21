@@ -119,7 +119,9 @@ const Tickets = () => {
   };
 
   const handleAssign = async (ticketId: string, userId: string | null) => {
-    await assignTicket({ ticketId, assignedTo: userId ?? '' })
+    await assignTicket({ ticketId, assignedTo: userId ?? '' }).then(async () => {
+      await loadTickets(ticketRequest.page)
+    })
   }
 
   const columns: ColumnDef<Ticket>[] = [
