@@ -194,6 +194,7 @@ const Users = () => {
             sortBy={request.sortBy}
             sortDescending={request.sortDirection === 'desc'}
             onSort={handleSort}
+            isRowDisabled={(user) => user.isDeleted}
           />
         </TableWrapper>
       </TicketsPage>

@@ -134,7 +134,7 @@ const CommentSection = (ticket: Ticket) => {
         )}
 
         {/* Input row */}
-        {ticket.statusId !== TicketStatus.CLOSED && (
+        {ticket.statusId !== TicketStatus.CLOSED && !ticket.isDeleted && (
           <CommentInputRow>
             <SenderAvatar>{getInitials(currentUser)}</SenderAvatar>
             <TextField

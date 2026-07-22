@@ -169,16 +169,16 @@ const TicketView = () => {
       </FormCard>
 
       <CommentSection {...ticket}/>
-        <ConfirmationDialog
-          open={openConfirm}
-          title="Close Ticket"
-          message="Are you sure you want to close this ticket? This action cannot be undone."
-          confirmLabel="Confirm"
-          cancelLabel="Cancel"
-          variant="error"
-          onConfirm={() => {OnChangeStatus(TicketStatus.CLOSED); setOpenConfirm(false);}}
-          onCancel={() => setOpenConfirm(false)}
-        />
+      <ConfirmationDialog
+        open={openConfirm}
+        title="Close Ticket"
+        message="Are you sure you want to close this ticket? This action cannot be undone."
+        confirmLabel="Confirm"
+        cancelLabel="Cancel"
+        variant="error"
+        onConfirm={() => {OnChangeStatus(TicketStatus.CLOSED); setOpenConfirm(false);}}
+        onCancel={() => setOpenConfirm(false)}
+      />
     </PageRoot>
     
   )
