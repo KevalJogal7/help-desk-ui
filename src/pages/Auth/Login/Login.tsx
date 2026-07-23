@@ -45,7 +45,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login({ email, password })
+    await login({ email, password }, remember)
     navigate(ROUTES.TICKETS)
   }
 

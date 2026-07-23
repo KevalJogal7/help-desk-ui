@@ -3,15 +3,15 @@ import type { ForgotPasswordRequest, LoginRequest, LoginResponse, ResetPasswordR
 import type { ChangePasswordRequest, ProfileResponse, UpdateProfileRequest } from "../models/profile";
 import { authStorage } from "./storage.service";
 
-export const login = async (request: LoginRequest): Promise<LoginResponse> => {
+export const login = async (request: LoginRequest, remember = false): Promise<LoginResponse> => {
     const response = await http.post<LoginResponse>("/auth/login", request);
-    authStorage.setAuth(response);
+    authStorage.setAuth(response, remember);
     return response;
 };
 
 export const ssoLogin = async (request: SSOLoginRequest): Promise<LoginResponse> => {
     const response = await http.post<LoginResponse>("/auth/sso-login", request);
-    authStorage.setAuth(response);
+    authStorage.setAuth(response, false); // SSO never persists — tab-scoped only
     return response;
 };
 

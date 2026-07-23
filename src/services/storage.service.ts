@@ -1,24 +1,26 @@
 import type { LoginResponse } from "../models/auth";
 
-const STORAGE_KEY = "auth";
+const KEY = "auth";
 
 export const authStorage = {
-    setAuth(data: LoginResponse): void {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    setAuth(data: LoginResponse, remember = false): void {
+        const raw = JSON.stringify(data);
+        if (remember) {
+            localStorage.setItem(KEY, raw);
+        } else {
+            sessionStorage.setItem(KEY, raw);
+        }
     },
 
     getAuth(): LoginResponse | null {
-        const data = sessionStorage.getItem(STORAGE_KEY);
-
-        if (!data) {
-            return null;
-        }
-
-        return JSON.parse(data) as LoginResponse;
+        const raw = sessionStorage.getItem(KEY) ?? localStorage.getItem(KEY);
+        if (!raw) return null;
+        return JSON.parse(raw) as LoginResponse;
     },
 
     clearAuth(): void {
-        sessionStorage.clear();
+        sessionStorage.removeItem(KEY);
+        localStorage.removeItem(KEY);
     },
 
     getAccessToken(): string | null {
@@ -30,8 +32,7 @@ export const authStorage = {
     },
 
     getUserName(): string | null {
-        const name = this.getAuth()?.userName ?? null;
-        return name;
+        return this.getAuth()?.userName ?? null;
     },
 
     getRole(): string | null {
